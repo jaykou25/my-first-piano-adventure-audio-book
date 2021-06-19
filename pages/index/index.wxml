@@ -1,0 +1,9 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="header">
+   我的钢琴第一课B-中文 
+  </view>
+  <view class="usermotto">
+    <text class="user-motto">{{motto}}</text>
+  </view>
+</view>
