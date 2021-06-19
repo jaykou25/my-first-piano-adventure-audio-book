@@ -1,9 +1,23 @@
 <!--index.wxml-->
 <view class="container">
-  <view class="header">
-   我的钢琴第一课B-中文 
-  </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
-  </view>
+	<view class="header">
+		我的钢琴第一课B-中文
+	</view>
+	<view class="audio-list">
+		<view
+		 class='audio-item'
+		 wx:for="{{audios}}"
+		 wx:key="index"
+		 bindtap="handlePlay"
+		 data-index="{{index}}"
+		>
+			<view>{{item.name}}</view>
+			<view wx:if="{{index === currentIndex}}">playing</view>
+		</view>
+	</view>
+	<view class="play-area">
+		<text class="user-motto" bindtap="play">play</text>
+		<text class="user-motto" bindtap="pause">pause</text>
+	</view>
 </view>
+
