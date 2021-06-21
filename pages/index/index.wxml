@@ -1,23 +1,59 @@
 <!--index.wxml-->
 <view class="container">
-	<view class="header">
-		我的钢琴第一课B-中文
-	</view>
-	<view class="audio-list">
-		<view
-		 class='audio-item'
-		 wx:for="{{audios}}"
-		 wx:key="index"
-		 bindtap="handlePlay"
-		 data-index="{{index}}"
-		>
-			<view>{{item.name}}</view>
-			<view wx:if="{{index === currentIndex}}">playing</view>
+	<scroll-view class="body {{!!currentIndex ? 'body-playing' : ''}}" scroll-y="{{true}}">
+		<view class="header">
+			<view>
+				<text>本页面素材来自菲伯尔钢琴官网</text>
+			</view>
+			<view>
+				https://pianoadventures.cn
+			</view>
+
 		</view>
-	</view>
-	<view class="play-area">
-		<text class="user-motto" bindtap="play">play</text>
-		<text class="user-motto" bindtap="pause">pause</text>
+		<view class="audio-list">
+			<view
+			 class="audio-item {{index === currentIndex ? 'active' : ''}}"
+			 wx:for="{{audios[currentEp]}}"
+			 wx:key="index"
+			 bindtap="handlePlay"
+			 data-audio="{{item}}"
+			 data-index="{{index}}"
+			>
+				<text class="song-index">{{index + 1}}</text>
+				<text>{{item.title}}</text>
+			</view>
+		</view>
+		<view class="footer" />
+	</scroll-view>
+
+	<view class="bottom-area">
+		<view>
+			<view wx:if="{{!!currentIndex}}" class="audio-item active">
+				<text class="song-index">{{currentIndex + 1}}</text>
+				<text>{{currentAudio.title}}</text>
+			</view>
+		</view>
+		<view class="play-area-content">
+			<view
+			 wx:if="{{audioStatus === 1 || audioStatus === 2}}"
+			 class='icon-wrapper icon-wrapper-large'
+			 hover-class="icon-hover"
+			 bindtap="pause"
+			>
+				<i class="icon icon-large" style="background-image: url({{icons.pause}})" />
+			</view>
+			<view
+			 wx:else
+			 class='icon-wrapper icon-wrapper-large'
+			 hover-class="icon-hover"
+			 bindtap="play"
+			>
+				<i class="icon icon-large" style="background-image: url({{icons.play}})" />
+			</view>
+			<view hover-class="icon-hover-rotate" class='icon-wrapper icon-right' bindtap="refresh">
+				<i class="icon" style="background-image: url({{icons.refresh}})" />
+			</view>
+		</view>
 	</view>
 </view>
 

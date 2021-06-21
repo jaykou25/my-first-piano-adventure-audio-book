@@ -4,39 +4,48 @@ const app = getApp();
 
 const ba = wx.getBackgroundAudioManager();
 
+const audios = require("./audios");
+
 Page({
   data: {
-    audios: [
-      {
-        name: "春夏秋冬 - 张国荣",
-        src: "https://piano.ttnote.cn/audios/%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC%20-%20%E5%BC%A0%E5%9B%BD%E8%8D%A3.mp3",
-      },
-      {
-        name: "春夏秋冬 - 张国荣2",
-        src: "https://piano.ttnote.cn/audios/%E6%98%A5%E5%A4%8F%E7%A7%8B%E5%86%AC%20-%20%E5%BC%A0%E5%9B%BD%E8%8D%A3.mp3",
-      },
-    ],
+    audios,
+    currentEp: Object.keys(audios)[0],
     currentIndex: "",
+    currentAudio: "",
+    audioStatus: 0, // 0 默认, 1 waiting, 2 playing, 3 pause,
+    icons: app.globalData.icons,
   },
   onLoad() {
+    wx.setNavigationBarTitle({
+      title: Object.keys(audios)[0],
+    });
+
     // 音频播放进度实时回调
     ba.onTimeUpdate(function () {});
     ba.onCanplay(function () {
       console.log("onCanplay");
     });
     ba.onWaiting(() => {
-      console.log("onWaiting", ba.duration);
+      this.setData({ audioStatus: 1 });
     });
     ba.onPlay(() => {
-      console.log("onPlay", ba);
-      console.log("onPlayTitle", ba.title);
-      // this.setData({ currentIndex: index });
+      console.log("onPlay");
+      this.setData({ audioStatus: 2 });
+    });
+    ba.onPause(() => {
+      console.log("onPause");
+      this.setData({ audioStatus: 4 });
     });
     ba.onError(function (e) {
       console.log("onError", e);
     });
-    ba.onEnded(function () {
+    ba.onEnded(() => {
       console.log("onEnd");
+      this.setData({ audioStatus: 0 });
+    });
+    ba.onStop(() => {
+      console.log("onStop");
+      this.setData({ audioStatus: 0 });
     });
     ba.onNext(function () {
       console.log("onNext");
@@ -44,15 +53,7 @@ Page({
     ba.onPrev(function () {
       console.log("onPrev");
     });
-    ba.onEnded(function () {
-      console.log("onEnded");
-    });
-    ba.onStop(function () {
-      console.log("onStope");
-    });
-    ba.onWaiting(function () {
-      console.log("onWaiting", "正在拼命加载中...");
-    });
+
     // 处理从其他页面进入之前，该播放器已经实例过
     if (ba.duration > 0) {
       return;
@@ -69,15 +70,28 @@ Page({
     ba.pause();
   },
   play() {
-    ba.play();
+    if (this.data.currentIndex && this.data.audioStatus === 0) {
+      this.startPlay(this.data.currentAudio);
+    } else {
+      ba.play();
+    }
+  },
+  refresh() {
+    ba.seek(0);
   },
   handlePlay(e) {
     const index = e.currentTarget.dataset.index;
-    const audio = this.data.audios[index];
+    const audio = e.currentTarget.dataset.audio;
 
-    ba.title = audio.name;
-    ba.epname = "hello";
-    ba.singer = "jay";
+    if (index === this.data.currentIndex) return;
+
+    this.setData({ currentIndex: index, currentAudio: audio });
+
+    this.startPlay(audio);
+  },
+  startPlay(audio) {
+    ba.title = audio.title;
+    ba.epname = audio.epname;
     ba.src = audio.src;
   },
   getUserProfile(e) {
@@ -100,5 +114,8 @@ Page({
       userInfo: e.detail.userInfo,
       hasUserInfo: true,
     });
+  },
+  isPlaying() {
+    return [1, 2].includes(+this.data.audioStatus);
   },
 });

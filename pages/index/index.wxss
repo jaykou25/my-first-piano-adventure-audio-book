@@ -1,17 +1,137 @@
 /**index.wxss**/
 
+.body {
+  padding-top: 20rpx;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.body-playing .footer {
+  height: calc(44px + 53px + env(safe-area-inset-bottom));
+}
+
 .header {
-  font-size: large;
+  padding: 5px 30rpx;
+  font-size: 12px;
   color: #aaa;
+  text-align: center;
+}
+
+.footer {
+  height: calc(44px + env(safe-area-inset-bottom));
+}
+
+.icon-info {
+  vertical-align: middle;
 }
 
 .audio-list {
   padding: 10rpx 0;
-  margin: 50rpx 0;
 }
 
-.play-area {
-  position: absolute;
+.audio-item {
+  padding: 28rpx;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.8);
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.song-index {
+  font-size: 18px;
+  margin-right: 10px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.audio-item.active .song-index {
+  color: green;
+}
+
+.audio-item.active {
+  color: green;
+}
+
+.bottom-area {
+  box-sizing: border-box;
+  position: fixed;
   bottom: 0;
-  padding-bottom: 50rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+  /* border-top: 1px solid #adadad; */
+  width: 100%;
+  background-color: rgba(247, 247, 247, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.play-area-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.icon-wrapper {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-wrapper-large {
+  width: 38px;
+  height: 38px;
+}
+.icon-hover-rotate > i {
+  animation: rotate 0.8s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.icon {
+  width: 25px;
+  height: 25px;
+  background-repeat: no-repeat;
+  background-origin: center;
+  display: inline-block;
+}
+
+.icon-large {
+  width: 36px;
+  height: 36px;
+}
+
+.icon-small {
+  height: 14px;
+  width: 14px;
+}
+
+.icon-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  margin-right: 20px;
+}
+.icon-right::after {
+  content: "重新播放";
+  position: absolute;
+  bottom: -10px;
+  font-size: 9px;
+  width: 50px;
+  text-align: center;
 }
