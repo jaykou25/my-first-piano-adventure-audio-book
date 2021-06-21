@@ -1,0 +1,44 @@
+.top {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+}
+.statusBar {
+  width: 100%;
+}
+.navBar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: green;
+}
+
+.icon-wrapper {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  background-repeat: no-repeat;
+  background-origin: center;
+  display: inline-block;
+}
+
+.iconMenu {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  margin-left: 12px;
+}

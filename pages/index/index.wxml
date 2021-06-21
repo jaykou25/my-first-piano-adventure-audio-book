@@ -1,4 +1,5 @@
 <!--index.wxml-->
+<navbar title="{{currentEp}}" menuIcon="{{icons.menu}}" />
 <view class="container">
 	<scroll-view class="body {{!!currentIndex ? 'body-playing' : ''}}" scroll-y="{{true}}">
 		<view class="header">

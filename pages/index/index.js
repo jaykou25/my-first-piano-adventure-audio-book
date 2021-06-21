@@ -16,10 +16,6 @@ Page({
     icons: app.globalData.icons,
   },
   onLoad() {
-    wx.setNavigationBarTitle({
-      title: Object.keys(audios)[0],
-    });
-
     // 音频播放进度实时回调
     ba.onTimeUpdate(function () {});
     ba.onCanplay(function () {
