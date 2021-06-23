@@ -1,0 +1,12 @@
+var isPlaying = function (track) {
+  return !!track.index || track.index === 0;
+};
+
+var isActive = function (index, track, epIndex) {
+  return index === track.index && track.epIndex === epIndex;
+};
+
+module.exports = {
+  isPlaying: isPlaying,
+  isActive: isActive,
+};

@@ -64,6 +64,20 @@
   width: 100%;
   background-color: rgba(247, 247, 247, 0.8);
   backdrop-filter: blur(8px);
+  z-index: 1;
+}
+
+.iconMenu {
+  position: absolute;
+  right: 0;
+  top: -80px;
+  margin-right: 12px;
+  background-color: rgba(247, 247, 247, 0.8);
+  box-shadow: 2px 2px 5px rgba(210, 210, 210, 0.9);
+}
+
+.iconMenuHover {
+  background-color: rgba(237, 237, 237, 0.9);
 }
 
 .play-area-content {
@@ -115,8 +129,8 @@
 }
 
 .icon-small {
-  height: 14px;
-  width: 14px;
+  height: 20px;
+  width: 20px;
 }
 
 .icon-right {
@@ -134,4 +148,52 @@
   font-size: 9px;
   width: 50px;
   text-align: center;
+}
+
+.picker {
+  padding: 0 calc(env(safe-area-inset-right)) env(safe-area-inset-bottom)
+    calc(env(safe-area-inset-left));
+}
+
+.picker .weui-half-screen-dialog__ft {
+  display: none;
+}
+
+.picker .weui-half-screen-dialog__bd {
+  padding-bottom: 0;
+  margin-left: -calc(24px + env(safe-area-inset-left));
+  margin-right: -calc(24px + env(safe-area-inset-right));
+}
+
+.pickerTitle {
+  height: 64px;
+  line-height: 64px;
+}
+
+.flexBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.cancelText,
+.confirmText {
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.cancelText {
+  color: rgba(0, 0, 0, 0.8);
+}
+.confirmText {
+  color: #07c160;
+}
+
+.pickerRow {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  font-size: 18px;
 }

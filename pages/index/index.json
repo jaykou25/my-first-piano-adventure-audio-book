@@ -1,6 +1,6 @@
 {
-  "navigationStyle": "custom",
   "usingComponents": {
-    "navbar": "../../components/navbar/navbar"
+    "mp-dialog": "weui-miniprogram/dialog/dialog",
+    "mp-half-screen-dialog": "weui-miniprogram/half-screen-dialog/half-screen-dialog"
   }
 }

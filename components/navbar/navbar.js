@@ -9,6 +9,10 @@ Component({
       type: String,
       value: "",
     },
+    epnames: {
+      type: Array,
+      value: [],
+    },
   },
   attached() {
     wx.getSystemInfo().then((res) => {

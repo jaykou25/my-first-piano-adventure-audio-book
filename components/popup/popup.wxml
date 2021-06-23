@@ -1,0 +1,9 @@
+<view class='overlay' bindtap="onClose" />
+<view class='popupContent'>
+	<view class="actions">
+		<view class="cancelBtn" bindtap="onClose">取消</view>
+		<view class="confirmBtn" bindtap="onConfirm">确认</view>
+	</view>
+	<slot/>
+</view>
+

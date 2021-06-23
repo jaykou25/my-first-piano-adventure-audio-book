@@ -2,9 +2,11 @@
 <view class='top'>
 	<view class='statusBar' style="height:{{statusHeight}}px" />
 	<view class="navBar" style="height:{{navHeight}}px">
-		<view class='icon-wrapper iconMenu' hover-class="todo" bindtap="refresh">
-			<i class="icon" style="background-image: url({{menuIcon}})" />
-		</view>
+		<picker range="{{epnames}}">
+			<view class='icon-wrapper iconMenu' hover-class="todo">
+				<i class="icon" style="background-image: url({{menuIcon}})" />
+			</view>
+		</picker>
 		<view class="title">{{title}}</view>
 	</view>
 </view>

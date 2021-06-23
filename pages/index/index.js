@@ -4,18 +4,35 @@ const app = getApp();
 
 const ba = wx.getBackgroundAudioManager();
 
-const audios = require("./audios");
+const eps = require("./audios");
 
 Page({
   data: {
-    audios,
-    currentEp: Object.keys(audios)[0],
-    currentIndex: "",
-    currentAudio: "",
+    eps,
+    epIndex: 0,
+    playingTrack: { index: "", title: "", epIndex: "" },
     audioStatus: 0, // 0 默认, 1 waiting, 2 playing, 3 pause,
     icons: app.globalData.icons,
+    pickerShow: false,
+  },
+  temp: {
+    epIndex: "",
   },
   onLoad() {
+    wx.getStorage({
+      key: "epIndex",
+      success: (res) => {
+        this.setData({ epIndex: res.data });
+
+        wx.setNavigationBarTitle({
+          title: eps[res.data].name,
+        });
+      },
+    });
+
+    wx.setNavigationBarTitle({
+      title: eps[this.data.epIndex].name,
+    });
     // 音频播放进度实时回调
     ba.onTimeUpdate(function () {});
     ba.onCanplay(function () {
@@ -79,39 +96,49 @@ Page({
     const index = e.currentTarget.dataset.index;
     const audio = e.currentTarget.dataset.audio;
 
-    if (index === this.data.currentIndex) return;
+    if (
+      index === this.data.playingTrack.index &&
+      this.data.playingTrack.epIndex === this.data.epIndex
+    )
+      return;
 
-    this.setData({ currentIndex: index, currentAudio: audio });
+    this.setData({
+      playingTrack: { ...audio, index, epIndex: this.data.epIndex },
+    });
 
     this.startPlay(audio);
   },
   startPlay(audio) {
     ba.title = audio.title;
-    ba.epname = audio.epname;
     ba.src = audio.src;
   },
-  getUserProfile(e) {
-    // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-    wx.getUserProfile({
-      desc: "展示用户信息", // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-      success: (res) => {
-        console.log(res);
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true,
-        });
-      },
-    });
+  pickerChange(e) {
+    this.temp.epIndex = e.detail.value[0];
   },
-  getUserInfo(e) {
-    // 不推荐使用getUserInfo获取用户信息，预计自2021年4月13日起，getUserInfo将不再弹出弹窗，并直接返回匿名的用户个人信息
-    console.log(e);
+  confirmPick() {
     this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true,
+      epIndex: this.temp.epIndex,
+      pickerShow: false,
+    });
+
+    wx.setNavigationBarTitle({
+      title: eps[this.data.epIndex].name,
+    });
+
+    wx.setStorage({
+      key: "epIndex",
+      data: this.data.epIndex,
     });
   },
+
   isPlaying() {
     return [1, 2].includes(+this.data.audioStatus);
   },
+  toPickerShow() {
+    this.setData({ pickerShow: true });
+  },
+  toPickerHide() {
+    this.setData({ pickerShow: false });
+  },
+  catchTouchMove() {},
 });
