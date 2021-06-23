@@ -39,24 +39,34 @@
 		</view>
 
 		<!-- 正在播放 -->
-		<view>
-			<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active playingAudio">
-				<image class="audioImg" src="{{eps[playingTrack.epIndex].img}}" />
-				<view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
-				<view class="audioTitle">{{playingTrack.title}}</view>
+		<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active playingAudio">
+			<image class="audioImg" src="{{eps[playingTrack.epIndex].img}}" />
+			<view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
+			<view class="audioTitle">{{playingTrack.title}}</view>
+			<view class='icon-wrapper iconClose' bindtap='closePlaying'>
+				<i class="icon icon-small" style="background-image: url({{icons.close}})" />
 			</view>
+			<text wx:if="{{waiting}}" class="audioLoading">加载中...</text>
 		</view>
 
 		<!-- 控制区域 -->
 		<view class="play-area-content">
+
+			<!-- 回退 -->
+			<view hover-class="todo" class='icon-wrapper iconBack iconTip' bindtap="playBack">
+				<i class="icon" style="background-image: url({{icons.playBack}})" />
+			</view>
+
+			<!-- 暂停 -->
 			<view
-			 wx:if="{{audioStatus === 1 || audioStatus === 2}}"
+			 wx:if="{{audioStatus === 2}}"
 			 class='icon-wrapper icon-wrapper-large'
 			 hover-class="icon-hover"
 			 bindtap="pause"
 			>
 				<i class="icon icon-large" style="background-image: url({{icons.pause}})" />
 			</view>
+			<!-- 播放 -->
 			<view
 			 wx:else
 			 class='icon-wrapper icon-wrapper-large'
@@ -65,7 +75,14 @@
 			>
 				<i class="icon icon-large" style="background-image: url({{icons.play}})" />
 			</view>
-			<view hover-class="icon-hover-rotate" class='icon-wrapper icon-right' bindtap="refresh">
+
+			<!-- 快进 -->
+			<view hover-class="todo" class='icon-wrapper iconForward iconTip' bindtap="playForward">
+				<i class="icon" style="background-image: url({{icons.playForward}})" />
+			</view>
+
+			<!-- 重新播放 -->
+			<view hover-class="icon-hover-rotate" class='icon-wrapper iconRight iconTip' bindtap="refresh">
 				<i class="icon" style="background-image: url({{icons.refresh}})" />
 			</view>
 		</view>

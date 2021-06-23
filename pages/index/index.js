@@ -10,8 +10,15 @@ Page({
   data: {
     eps,
     epIndex: 0,
-    playingTrack: { index: "", title: "", epIndex: "" },
-    audioStatus: 0, // 0 默认, 1 waiting, 2 playing, 3 pause,
+    playingTrack: {
+      index: "",
+      title: "",
+      epIndex: "",
+    },
+    audioStatus: 0, // 0 默认, 2 playing, 3 pause,
+    waiting: false,
+    currentTime: "",
+    duration: "",
     icons: app.globalData.icons,
     pickerShow: false,
   },
@@ -34,12 +41,19 @@ Page({
     //   title: eps[this.data.epIndex].name,
     // });
     // 音频播放进度实时回调
-    ba.onTimeUpdate(function () {});
+    ba.onTimeUpdate(() => {
+      this.setData({
+        currentTime: ba.currentTime,
+        duration: ba.duration,
+        waiting: false,
+      });
+    });
     ba.onCanplay(function () {
       console.log("onCanplay");
     });
     ba.onWaiting(() => {
-      this.setData({ audioStatus: 1 });
+      console.log("onwaiting");
+      this.setData({ waiting: true });
     });
     ba.onPlay(() => {
       console.log("onPlay");
@@ -47,7 +61,7 @@ Page({
     });
     ba.onPause(() => {
       console.log("onPause");
-      this.setData({ audioStatus: 4 });
+      this.setData({ audioStatus: 3 });
     });
     ba.onError(function (e) {
       console.log("onError", e);
@@ -58,7 +72,7 @@ Page({
     });
     ba.onStop(() => {
       console.log("onStop");
-      this.setData({ audioStatus: 0 });
+      this.setData({ audioStatus: 0, playingTrack: {} });
     });
     ba.onNext(function () {
       console.log("onNext");
@@ -66,12 +80,6 @@ Page({
     ba.onPrev(function () {
       console.log("onPrev");
     });
-
-    // 处理从其他页面进入之前，该播放器已经实例过
-    if (ba.duration > 0) {
-      return;
-    }
-    // 初始加载完成后，将音频列表放到globalData中，缓存播放列表
   },
   // 事件处理函数
   bindViewTap() {
@@ -83,14 +91,27 @@ Page({
     ba.pause();
   },
   play() {
-    if (this.data.currentIndex && this.data.audioStatus === 0) {
-      this.startPlay(this.data.currentAudio);
+    // 已经播放完毕的歌
+    if (
+      (this.data.playingTrack.index || this.data.playingTrack.index === 0) &&
+      this.data.audioStatus === 0
+    ) {
+      this.startPlay(this.data.playingTrack);
     } else {
       ba.play();
     }
   },
   refresh() {
     ba.seek(0);
+  },
+  closePlaying() {
+    ba.stop();
+  },
+  playBack() {
+    ba.seek(this.data.currentTime - 5);
+  },
+  playForward() {
+    ba.seek(this.data.currentTime + 5);
   },
   handlePlay(e) {
     const index = e.currentTarget.dataset.index;

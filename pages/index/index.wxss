@@ -1,6 +1,7 @@
 /**index.wxss**/
 .container {
   --wechat-green: #07c160;
+  --control-btn-margin: 80rpx;
 }
 
 .body {
@@ -97,6 +98,17 @@
   flex: none;
 }
 
+.audioLoading {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+
+  font-size: 10px;
+  text-align: center;
+}
+
 .audio-item.active {
   color: var(--wechat-green);
 }
@@ -181,21 +193,37 @@
   width: 22px;
 }
 
-.icon-right {
+.iconRight {
   position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
   margin: auto 0;
-  margin-right: 20px;
+  margin-right: 15px;
 }
-.icon-right::after {
-  content: "重新播放";
+.iconTip:after {
   position: absolute;
   bottom: -10px;
   font-size: 9px;
   width: 50px;
   text-align: center;
+}
+.iconRight::after {
+  content: "重新播放";
+}
+
+.iconBack {
+  margin-right: var(--control-btn-margin);
+}
+.iconBack::after {
+  content: "回退5秒";
+}
+
+.iconForward {
+  margin-left: var(--control-btn-margin);
+}
+.iconForward::after {
+  content: "快进5秒";
 }
 
 .picker {
