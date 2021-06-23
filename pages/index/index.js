@@ -24,15 +24,15 @@ Page({
       success: (res) => {
         this.setData({ epIndex: res.data });
 
-        wx.setNavigationBarTitle({
-          title: eps[res.data].name,
-        });
+        // wx.setNavigationBarTitle({
+        //   title: eps[res.data].name,
+        // });
       },
     });
 
-    wx.setNavigationBarTitle({
-      title: eps[this.data.epIndex].name,
-    });
+    // wx.setNavigationBarTitle({
+    //   title: eps[this.data.epIndex].name,
+    // });
     // 音频播放进度实时回调
     ba.onTimeUpdate(function () {});
     ba.onCanplay(function () {
@@ -121,9 +121,9 @@ Page({
       pickerShow: false,
     });
 
-    wx.setNavigationBarTitle({
-      title: eps[this.data.epIndex].name,
-    });
+    // wx.setNavigationBarTitle({
+    //   title: eps[this.data.epIndex].name,
+    // });
 
     wx.setStorage({
       key: "epIndex",

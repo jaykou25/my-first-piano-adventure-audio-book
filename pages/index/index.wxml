@@ -2,14 +2,7 @@
 <wxs src="./index.wxs" module="tool" />
 <view class="container">
 	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}">
-		<view class="header">
-			<view>
-				<text>本页面素材来自菲伯尔钢琴官网</text>
-			</view>
-			<view>
-				https://pianoadventures.cn
-			</view>
-		</view>
+		<view class='header'>{{eps[epIndex].name}}</view>
 
 		<view class="audio-list">
 			<view
@@ -20,23 +13,41 @@
 			 data-audio="{{item}}"
 			 data-index="{{index}}"
 			>
-				<text class="song-index">{{index + 1}}</text>
-				<text>{{item.title}}</text>
+				<image class="audioImg" src="{{eps[epIndex].img}}" />
+				<view class="audioIndex">{{tool.pad(index + 1)}}</view>
+				<view class="audioTitle">{{item.title}}</view>
+				<view class="audioLength">{{item.length}}</view>
 			</view>
 		</view>
+
+		<view class="info">
+			<view>
+				<text>本页面素材来自菲伯尔钢琴官网</text>
+			</view>
+			<view>
+				https://pianoadventures.cn
+			</view>
+		</view>
+
 		<view class="footer" />
 	</scroll-view>
 
 	<view class="bottom-area">
+		<!-- 菜单按钮 -->
 		<view class='icon-wrapper iconMenu' hover-class="iconMenuHover" bindtap='toPickerShow'>
 			<i class="icon icon-small" style="background-image: url({{icons.menu}})" />
 		</view>
+
+		<!-- 正在播放 -->
 		<view>
-			<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active">
-				<text class="song-index">{{playingTrack.index + 1}}</text>
-				<text>{{playingTrack.title}}</text>
+			<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active playingAudio">
+				<image class="audioImg" src="{{eps[playingTrack.epIndex].img}}" />
+				<view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
+				<view class="audioTitle">{{playingTrack.title}}</view>
 			</view>
 		</view>
+
+		<!-- 控制区域 -->
 		<view class="play-area-content">
 			<view
 			 wx:if="{{audioStatus === 1 || audioStatus === 2}}"

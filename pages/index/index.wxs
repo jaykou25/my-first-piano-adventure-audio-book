@@ -6,7 +6,16 @@ var isActive = function (index, track, epIndex) {
   return index === track.index && track.epIndex === epIndex;
 };
 
+var pad = function (val) {
+  if (val < 10) {
+    return "0" + val;
+  }
+
+  return val;
+};
+
 module.exports = {
   isPlaying: isPlaying,
   isActive: isActive,
+  pad: pad,
 };
