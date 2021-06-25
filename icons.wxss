@@ -1,0 +1,114 @@
+/*
+* https://remixicon.com
+* https://github.com/Remix-Design/RemixIcon
+* Copyright RemixIcon.com
+* Released under the Apache License Version 2.0
+*/
+
+@font-face {
+  font-family: "remixicon";
+  src: url("data:font/woff2;charset=utf-8;base64,d09GMgABAAAAAAWcAA4AAAAADOgAAAVFAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GVgCDEggEEQgKiWCHUgsgAAE2AiQDJgQgBYZFB4FZG70KyJ4H2bniJHkqldU3yqKcWbU0ppHXoyVWiOwgexHtACmrJVQA0d7gAeErQPQ6giAYuW2S6Fz/UNj1JSohccSJY9rggeeWv+PkwBI9xcprE7mBh3uZjXB462hpV2h//2ut/rnzZqHcAWcRC40a5mbX/y7iXt1CIeGlqSetXKIUEonEI9EIndQ4yNtA3eTqaT4IAAFw8e1OdgC48eTvKOm1CeAERAEkROZCGEACUPw5bYIFpJ+cAYL3kRhpgAz6rc8SQbm0YJtqoH203sE+B1An+AGqAmTcTIjBOk6Ul2n6+TFUMvuj9f8h/3/7/+X/r97mt5tvT7+96HZ3vHoFgLaF319ErXpUzVc9qlu8FK1iu1gnVrlaQZQaSpHmpnBeif7fADa0c/gYAP1fTdwqIClzDNAIQh9gprtAGZFVkCqI5OqE1sbMyRS3YMwJMXewRXboFBWl2EKsUxULn+kvLUGZj/m75oZCRZ+7o8XB4PbI0u3bt23jKrGoHiXVKYzXYu+fu/ijtR9AOr+/5kOq8H/H3KZt75Jl8XuRzdsXleHfti0Q5QsEgkFFrD1PsiItunCBz6n3I3WtOQOplBdfvqwUzStVnF6cGtf4Lqmepf7LnvWlFz1LSi5QCBPiLHpxHHH9Iljq9x0RENMuK+xiKfgOno+XzMUiIjBynLL4knoBh4sI7jezMvgO2PntqArJaGsJLI42I0Uzl0kWlstj1SPGfXZnbaQW3en2mdtu/95Hp6Y+NJDU0lDvw7S04x6lpaKa/1hmLHtK3Bv96j9029yDZ0pOflQyPO+I/aLx8x/GH/uQWoTdvg2UGfd+wg6BuBdFnuh6IvI+uXrjPWxvDL14Q6cc3iP2iT2Hnd3vxWHj4fo+5fUuH3bZZGzq32/8+H79rV4tZYYqlT45bPh36G70hn9eZXqbRo9u8pqq17SQw+D8KvvnWvVg5LC4krgiUSr8TWsL2xRoPvsY+1ajU36nHPJhmHbluDO7+yxjWEEHjz+ylvQeqcUJlaJ6yPhxA2tcVUkFad31AQEM+t7yDn5/+LjuErYqPzozKv2T15ICkwrf3tz8XYcvPWtnZn7Mvxvzxs6ab2M/6+8dif56ovfsoWMmzSF/b0YRzmJ1FwD4guBpvrQx/Nv7C6vlhueWJUyyyBYLppRa6bnPCfrKBCDY9+lX2mQx9IFdYZ+vA1hEKrayqSCwDwYAgiKSuXsFgaIxkHUmnKhrKA4BGEF3mkSbYKgVNaNKsjCYnHgJwHHAK7gBABDmFggAAA4RCAAQh96IqrLJ8UMyhypg9hUhC8X7ISuHIyGuJfj+ekV4WAyOYgeAMECA7EkhicvQkCxMCTB7S8giyqaQVZivQ9wvOPdMRcewG4o4k+TVMRYzUrSpr551RXANSEuGI1larNVQdFxwGSk78rTBKWBTQsHXsTskcSj05tYPjlastbe734AkLAfT0RCG4610YHJO0MiDRitn1jAtLjvDgQbO5bRTRqzj9BkpzXQJr3Imqm2iLRlw8PJFQXjyTjmTP1DGPd1hQUWmFwyaKgRx2l7QTQvzu3LVYhWrBG316BrZpVWbmn4bNG1UGT0Os0jbu+LhI3FLSzq7pfy4fm1Zi17hcGNjX95K3mFqeoPxv2htQJVTDa4kD/XdnMdGfeNinqsmZLeaNndp/4u2S3OwybIYJwXiRUQKJJKJkYWsZCM7OYiTQk4K4RuKeo8NcN2xDSq4XGxF6j02KoVwE2/Sp+cwhEe7JWIJBTNCtmwLe/RmpVBhY0MV1SkK26njBGjDlSm0UyIkcr4RLAg=")
+    format("woff2");
+
+  font-display: swap;
+}
+
+[class^="ri-"],
+[class*="ri-"] {
+  font-family: "remixicon" !important;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ri-lg {
+  /* font-size: 1.3333em;
+  line-height: 0.75em;
+  vertical-align: -0.0667em; */
+  font-size: 1.5em;
+}
+.ri-xl {
+  font-size: 1.5em;
+  line-height: 0.6666em;
+  vertical-align: -0.075em;
+}
+.ri-xxs {
+  font-size: 0.5em;
+}
+.ri-xs {
+  font-size: 0.75em;
+}
+.ri-sm {
+  font-size: 0.875em;
+}
+.ri-1x {
+  font-size: 1em;
+}
+.ri-2x {
+  font-size: 2em;
+}
+.ri-3x {
+  font-size: 3em;
+}
+.ri-4x {
+  font-size: 4em;
+}
+.ri-5x {
+  font-size: 5em;
+}
+.ri-6x {
+  font-size: 6em;
+}
+.ri-7x {
+  font-size: 7em;
+}
+.ri-8x {
+  font-size: 8em;
+}
+.ri-9x {
+  font-size: 9em;
+}
+.ri-10x {
+  font-size: 10em;
+}
+.ri-fw {
+  text-align: center;
+  width: 1.25em;
+}
+
+.ri-repeat-2-fill:before {
+  content: "\f071";
+}
+.ri-repeat-one-fill:before {
+  content: "\f075";
+}
+.ri-order-play-fill:before {
+  content: "\efb6";
+}
+.ri-play-fill:before {
+  content: "\f00a";
+}
+.ri-pause-fill:before {
+  content: "\efd7";
+}
+.ri-rewind-fill:before {
+  content: "\f085";
+}
+.ri-speed-fill:before {
+  content: "\f176";
+}
+.ri-menu-fill:before {
+  content: "\ef3b";
+}
+.ri-close-fill:before {
+  content: "\eb98";
+}
+.ri-restart-fill:before {
+  content: "\f07f";
+}
+.ri-restart-line:before {
+  content: "\f080";
+}
+.ri-pause-mini-fill:before {
+  content: "\efd9";
+}

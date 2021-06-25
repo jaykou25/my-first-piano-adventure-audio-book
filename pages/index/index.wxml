@@ -9,9 +9,9 @@
 			 class="audio-item {{tool.isActive(index, playingTrack, epIndex) ? 'active' : ''}}"
 			 wx:for="{{eps[epIndex].audios}}"
 			 wx:key="index"
-			 bindtap="handlePlay"
-			 data-audio="{{item}}"
+			 bindtap="handleAudioClick"
 			 data-index="{{index}}"
+			 data-audio="{{item}}"
 			>
 				<image class="audioImg" src="{{eps[epIndex].img}}" />
 				<view class="audioIndex">{{tool.pad(index + 1)}}</view>
@@ -35,7 +35,7 @@
 	<view class="bottom-area">
 		<!-- 菜单按钮 -->
 		<view class='icon-wrapper iconMenu' hover-class="iconMenuHover" bindtap='toPickerShow'>
-			<i class="icon icon-small" style="background-image: url({{icons.menu}})" />
+			<i class="ri-menu-fill ri-lg" />
 		</view>
 
 		<!-- 正在播放 -->
@@ -44,17 +44,47 @@
 			<view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
 			<view class="audioTitle">{{playingTrack.title}}</view>
 			<view class='icon-wrapper iconClose' bindtap='closePlaying'>
-				<i class="icon icon-small" style="background-image: url({{icons.close}})" />
+				<i class="ri-close-fill ri-lg" />
 			</view>
-			<text wx:if="{{waiting}}" class="audioLoading">加载中...</text>
+			<text wx:if="{{waiting || loading}}" class="audioLoading">加载中...</text>
 		</view>
 
 		<!-- 控制区域 -->
 		<view class="play-area-content">
 
+			<!-- 正常模式 -->
+			<view
+			 wx:if="{{playMode === 1}}"
+			 hover-class="icon-hover"
+			 class='icon-wrapper iconMode iconModeNormal iconTip'
+			 bindtap="togglePlayMode"
+			>
+				<i class="ri-repeat-2-fill ri-lg" />
+			</view>
+
+			<!-- 单曲循环 -->
+			<view
+			 wx:if="{{playMode === 2}}"
+			 hover-class="icon-hover"
+			 class='icon-wrapper iconMode iconModeRepeat iconTip'
+			 bindtap="togglePlayMode"
+			>
+				<i class="ri-repeat-one-fill ri-lg" />
+			</view>
+
+			<!-- 顺序播放 -->
+			<view
+			 wx:if="{{playMode === 3}}"
+			 hover-class="icon-hover"
+			 class='icon-wrapper iconMode iconModeOrder iconTip'
+			 bindtap="togglePlayMode"
+			>
+				<i class="ri-order-play-fill ri-lg" />
+			</view>
+
 			<!-- 回退 -->
-			<view hover-class="todo" class='icon-wrapper iconBack iconTip' bindtap="playBack">
-				<i class="icon" style="background-image: url({{icons.playBack}})" />
+			<view hover-class="icon-hover" class='icon-wrapper iconBack iconTip' bindtap="playBack">
+				<i class="ri-rewind-fill ri-lg" />
 			</view>
 
 			<!-- 暂停 -->
@@ -64,8 +94,9 @@
 			 hover-class="icon-hover"
 			 bindtap="pause"
 			>
-				<i class="icon icon-large" style="background-image: url({{icons.pause}})" />
+				<i class="ri-pause-mini-fill ri-3x" />
 			</view>
+
 			<!-- 播放 -->
 			<view
 			 wx:else
@@ -73,17 +104,17 @@
 			 hover-class="icon-hover"
 			 bindtap="play"
 			>
-				<i class="icon icon-large" style="background-image: url({{icons.play}})" />
+				<i class="ri-play-fill ri-3x" />
 			</view>
 
 			<!-- 快进 -->
-			<view hover-class="todo" class='icon-wrapper iconForward iconTip' bindtap="playForward">
-				<i class="icon" style="background-image: url({{icons.playForward}})" />
+			<view hover-class="icon-hover" class='icon-wrapper iconForward iconTip' bindtap="playForward">
+				<i class="ri-speed-fill ri-lg" />
 			</view>
 
 			<!-- 重新播放 -->
-			<view hover-class="icon-hover-rotate" class='icon-wrapper iconRight iconTip' bindtap="refresh">
-				<i class="icon" style="background-image: url({{icons.refresh}})" />
+			<view hover-class="icon-hover-rotate" class='icon-wrapper iconRestart iconTip' bindtap="refresh">
+				<i class="ri-restart-fill ri-2x" />
 			</view>
 		</view>
 	</view>

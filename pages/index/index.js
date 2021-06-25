@@ -1,6 +1,5 @@
 // index.js
 // 获取应用实例
-const app = getApp();
 
 const ba = wx.getBackgroundAudioManager();
 
@@ -19,27 +18,17 @@ Page({
     waiting: false,
     currentTime: "",
     duration: "",
-    icons: app.globalData.icons,
     pickerShow: false,
+    playMode: 1,
+    loading: false,
   },
   temp: {
     epIndex: "",
   },
   onLoad() {
-    wx.getStorage({
-      key: "epIndex",
-      success: (res) => {
-        this.setData({ epIndex: res.data });
+    const defaultEpIndex = wx.getStorageSync("epIndex") || 0;
+    this.setData({ epIndex: defaultEpIndex });
 
-        // wx.setNavigationBarTitle({
-        //   title: eps[res.data].name,
-        // });
-      },
-    });
-
-    // wx.setNavigationBarTitle({
-    //   title: eps[this.data.epIndex].name,
-    // });
     // 音频播放进度实时回调
     ba.onTimeUpdate(() => {
       this.setData({
@@ -48,8 +37,10 @@ Page({
         waiting: false,
       });
     });
-    ba.onCanplay(function () {
+
+    ba.onCanplay(() => {
       console.log("onCanplay");
+      this.setData({ loading: false });
     });
     ba.onWaiting(() => {
       console.log("onwaiting");
@@ -68,7 +59,23 @@ Page({
     });
     ba.onEnded(() => {
       console.log("onEnd");
+
       this.setData({ audioStatus: 0 });
+
+      const { playMode } = this.data;
+
+      // 单曲循环
+      if (playMode === 2) {
+        this.play();
+        return;
+      }
+
+      // 顺序播放
+      if (playMode === 3) {
+        this.playNext();
+
+        return;
+      }
     });
     ba.onStop(() => {
       console.log("onStop");
@@ -105,26 +112,37 @@ Page({
     ba.seek(0);
   },
   closePlaying() {
-    ba.stop();
+    if (this.data.audioStatus === 0) {
+      this.setData({ playingTrack: {} });
+    } else {
+      ba.stop();
+    }
   },
   playBack() {
-    ba.seek(this.data.currentTime - 5);
+    if (this.data.audioStatus > 0) {
+      ba.seek(this.data.currentTime - 5);
+    }
   },
   playForward() {
-    ba.seek(this.data.currentTime + 5);
+    if (this.data.audioStatus > 0) {
+      ba.seek(this.data.currentTime + 5);
+    }
   },
-  handlePlay(e) {
+  handleAudioClick(e) {
     const index = e.currentTarget.dataset.index;
-    const audio = e.currentTarget.dataset.audio;
+    this.handlePlay(index);
+  },
+  handlePlay(index) {
+    this.setData({ loading: true });
 
-    if (
-      index === this.data.playingTrack.index &&
-      this.data.playingTrack.epIndex === this.data.epIndex
-    )
+    const { epIndex, playingTrack } = this.data;
+    const audio = eps[epIndex].audios[index];
+
+    if (index === playingTrack.index && playingTrack.epIndex === epIndex)
       return;
 
     this.setData({
-      playingTrack: { ...audio, index, epIndex: this.data.epIndex },
+      playingTrack: { ...audio, index, epIndex: epIndex },
     });
 
     this.startPlay(audio);
@@ -142,14 +160,7 @@ Page({
       pickerShow: false,
     });
 
-    // wx.setNavigationBarTitle({
-    //   title: eps[this.data.epIndex].name,
-    // });
-
-    wx.setStorage({
-      key: "epIndex",
-      data: this.data.epIndex,
-    });
+    wx.setStorageSync("epIndex", this.temp.epIndex);
   },
 
   isPlaying() {
@@ -162,4 +173,20 @@ Page({
     this.setData({ pickerShow: false });
   },
   catchTouchMove() {},
+  togglePlayMode() {
+    const mode = this.data.playMode;
+
+    if (mode === 3) {
+      this.setData({ playMode: 1 });
+      return;
+    }
+
+    this.setData({ playMode: mode + 1 });
+  },
+  playNext() {
+    const { playingTrack, epIndex } = this.data;
+    if (playingTrack.index < eps[epIndex].audios.length) {
+      this.handlePlay(playingTrack.index + 1);
+    }
+  },
 });
