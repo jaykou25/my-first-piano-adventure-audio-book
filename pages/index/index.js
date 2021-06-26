@@ -22,9 +22,6 @@ Page({
     playMode: 1,
     loading: false,
   },
-  temp: {
-    epIndex: "",
-  },
   onLoad() {
     const defaultEpIndex = wx.getStorageSync("epIndex") || 0;
     const defaultPlayMode = wx.getStorageSync("playMode") || 1;
@@ -40,27 +37,24 @@ Page({
     });
 
     ba.onCanplay(() => {
-      console.log("onCanplay");
       this.setData({ loading: false });
     });
+
     ba.onWaiting(() => {
-      console.log("onwaiting");
       this.setData({ waiting: true });
     });
+
     ba.onPlay(() => {
-      console.log("onPlay");
       this.setData({ audioStatus: 2 });
     });
+
     ba.onPause(() => {
-      console.log("onPause");
       this.setData({ audioStatus: 3 });
     });
-    ba.onError(function (e) {
-      console.log("onError", e);
-    });
-    ba.onEnded(() => {
-      console.log("onEnd");
 
+    ba.onError(function (e) {});
+
+    ba.onEnded(() => {
       this.setData({ audioStatus: 0 });
 
       const { playMode } = this.data;
@@ -78,10 +72,11 @@ Page({
         return;
       }
     });
+
     ba.onStop(() => {
-      console.log("onStop");
       this.setData({ audioStatus: 0, playingTrack: {} });
     });
+
     ba.onNext(function () {
       console.log("onNext");
     });
@@ -89,12 +84,7 @@ Page({
       console.log("onPrev");
     });
   },
-  // 事件处理函数
-  bindViewTap() {
-    wx.navigateTo({
-      url: "../logs/logs",
-    });
-  },
+
   pause() {
     ba.pause();
   },
@@ -152,9 +142,7 @@ Page({
     ba.title = audio.title;
     ba.src = audio.src;
   },
-  pickerChange(e) {
-    this.temp.epIndex = e.detail.value[0];
-  },
+
   confirmPick(e) {
     const index = +e.detail.value;
     this.setData({
