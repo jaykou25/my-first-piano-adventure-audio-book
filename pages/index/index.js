@@ -27,7 +27,8 @@ Page({
   },
   onLoad() {
     const defaultEpIndex = wx.getStorageSync("epIndex") || 0;
-    this.setData({ epIndex: defaultEpIndex });
+    const defaultPlayMode = wx.getStorageSync("playMode") || 1;
+    this.setData({ epIndex: defaultEpIndex, playMode: defaultPlayMode });
 
     // 音频播放进度实时回调
     ba.onTimeUpdate(() => {
@@ -154,13 +155,14 @@ Page({
   pickerChange(e) {
     this.temp.epIndex = e.detail.value[0];
   },
-  confirmPick() {
+  confirmPick(e) {
+    const index = +e.detail.value;
     this.setData({
-      epIndex: this.temp.epIndex,
+      epIndex: index,
       pickerShow: false,
     });
 
-    wx.setStorageSync("epIndex", this.temp.epIndex);
+    wx.setStorageSync("epIndex", index);
   },
 
   isPlaying() {
@@ -178,10 +180,14 @@ Page({
 
     if (mode === 3) {
       this.setData({ playMode: 1 });
+
+      wx.setStorageSync("playMode", 1);
       return;
     }
 
     this.setData({ playMode: mode + 1 });
+
+    wx.setStorageSync("playMode", mode + 1);
   },
   playNext() {
     const { playingTrack, epIndex } = this.data;

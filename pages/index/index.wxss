@@ -93,6 +93,7 @@
   white-space: nowrap;
   overflow: hidden;
   margin-right: 30rpx;
+  font-size: 18px;
 }
 
 .audioLength {
@@ -133,8 +134,8 @@
   margin-right: 12px;
   background-color: rgba(247, 247, 247, 1);
   box-shadow: 2px 2px 5px rgba(210, 210, 210, 0.9);
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
 }
 
 .iconMenuHover {
@@ -255,6 +256,10 @@
     calc(env(safe-area-inset-left));
 }
 
+.picker .weui-half-screen-dialog__hd {
+  display: none;
+}
+
 .picker .weui-half-screen-dialog__ft {
   display: none;
 }
@@ -291,7 +296,6 @@
 }
 
 .pickerRow {
-  padding: 0 24px;
   display: flex;
   align-items: center;
   height: 60px;
@@ -300,4 +304,9 @@
 
 .icon-hover {
   color: rgba(110, 110, 110, 1);
+}
+
+.checkboxGroup {
+  height: 250px;
+  overflow: auto;
 }
