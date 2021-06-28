@@ -22,6 +22,19 @@ Page({
     playMode: 1,
     loading: false,
   },
+  onShareAppMessage() {
+    return {
+      title: "我的钢琴第一课音频素材",
+      path: "/pages/index/index",
+      imageUrl: "/pages/index/levelA800.png",
+    };
+  },
+  onShareTimeline() {
+    return {
+      title: "我的钢琴第一课音频素材",
+      imageUrl: "/pages/index/levelA800.png",
+    };
+  },
   onLoad() {
     const defaultEpIndex = wx.getStorageSync("epIndex") || 0;
     const defaultPlayMode = wx.getStorageSync("playMode") || 1;
