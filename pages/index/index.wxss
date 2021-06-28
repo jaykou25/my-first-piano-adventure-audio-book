@@ -122,9 +122,19 @@
   padding-bottom: env(safe-area-inset-bottom);
   /* border-top: 1px solid #adadad; */
   width: 100%;
-  background-color: rgba(247, 247, 247, 0.8);
-  backdrop-filter: blur(8px);
+  background-color: rgba(247, 247, 247, 1);
+  /* backdrop-filter: blur(8px); */
   z-index: 1;
+}
+
+@supports (
+  (-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))
+) {
+  .bottom-area {
+    background-color: hsla(0, 0%, 95%, 0.9); /* bgColorPrimaryRgba */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
 }
 
 .iconMenu {
