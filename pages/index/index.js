@@ -21,6 +21,15 @@ Page({
     pickerShow: false,
     playMode: 1,
     loading: false,
+    speedShow: false,
+    speedOptions: [
+      { value: 0.75, label: "0.75X", icon: "🐢" },
+      { value: 1, label: "1.0X", icon: "🧒" },
+      { value: 1.25, label: "1.25X", icon: "🐇" },
+      { value: 1.5, label: "1.5X", icon: "🐆" },
+    ],
+    speed: 1,
+    speedLabel: "",
   },
   onShareAppMessage() {
     return {
@@ -154,6 +163,7 @@ Page({
   startPlay(audio) {
     ba.title = audio.title;
     ba.src = audio.src;
+    // ba.playbackRate = this.data.speed;
   },
 
   confirmPick(e) {
@@ -166,6 +176,21 @@ Page({
     wx.setStorageSync("epIndex", index);
   },
 
+  confirmSpeed(e) {
+    const speed = +e.detail.value;
+    const target = this.data.speedOptions.find((op) => op.value === speed);
+    this.setData({
+      speed,
+      speedLabel: target.label,
+      speedShow: false,
+    });
+
+    // 处理播放速度的逻辑, 如果正在播放, 应该要先停掉这个歌, 设置好速度后再定位到当时的时间
+    // ba.playbackRate = speed;
+    // ba.pause();
+    // ba.play();
+  },
+
   isPlaying() {
     return [1, 2].includes(+this.data.audioStatus);
   },
@@ -174,6 +199,12 @@ Page({
   },
   toPickerHide() {
     this.setData({ pickerShow: false });
+  },
+  toSpeedShow() {
+    this.setData({ speedShow: true });
+  },
+  toSpeedHide() {
+    this.setData({ speedShow: false });
   },
   catchTouchMove() {},
   togglePlayMode() {

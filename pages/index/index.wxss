@@ -261,6 +261,14 @@
   content: "快进5秒";
 }
 
+.iconPause {
+  font-size: 3.2em;
+}
+
+.iconPlay::after {
+  content: "播放";
+}
+
 .picker {
   padding: 0 calc(env(safe-area-inset-right)) env(safe-area-inset-bottom)
     calc(env(safe-area-inset-left));
@@ -308,7 +316,7 @@
 .pickerRow {
   display: flex;
   align-items: center;
-  height: 60px;
+  /* height: 60px; */
   font-size: 18px;
 }
 
@@ -319,4 +327,38 @@
 .checkboxGroup {
   height: 250px;
   overflow: auto;
+}
+
+.audioProgressRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 0 16px 11px;
+  border-bottom: 1px solid #ededed;
+}
+
+.audioProgress {
+  flex: auto;
+  position: relative;
+}
+
+.audioProgressText {
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 10px;
+  margin: 0 9px;
+}
+
+.audioSpeed {
+  flex: none;
+  margin-left: 12px;
+  margin-right: 15px;
+
+  font-weight: 600;
+  font-size: 16px;
 }

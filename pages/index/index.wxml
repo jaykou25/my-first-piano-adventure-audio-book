@@ -51,6 +51,22 @@
 			<text wx:if="{{waiting || loading}}" class="audioLoading">加载中...</text>
 		</view>
 
+		<!-- 播放进度条与速度 -->
+		<view class="audioProgressRow">
+			<view class="audioProgress">
+				<slider block-size="16" />
+				<view class="audioProgressText">
+					<text>0:00</text>
+					<text>04:10</text>
+				</view>
+			</view>
+			<!-- 播放速度 -->
+			<view class="audioSpeed" bindtap="toSpeedShow">
+				<text wx:if="{{speed === 1}}">倍速</text>
+				<text wx:else>{{speedLabel}}</text>
+			</view>
+		</view>
+
 		<!-- 控制区域 -->
 		<view class="play-area-content">
 
@@ -96,13 +112,13 @@
 			 hover-class="icon-hover"
 			 bindtap="pause"
 			>
-				<i class="ri-pause-mini-fill ri-3x" />
+				<i class="ri-pause-mini-fill ri-3x iconPause" />
 			</view>
 
 			<!-- 播放 -->
 			<view
 			 wx:else
-			 class='icon-wrapper icon-wrapper-large'
+			 class='icon-wrapper icon-wrapper-large '
 			 hover-class="icon-hover"
 			 bindtap="play"
 			>
@@ -151,5 +167,36 @@
 		</mp-cells>
 
 	</mp-half-screen-dialog>
+
+	<mp-half-screen-dialog extClass='picker' show="{{speedShow}}" closabled="{{false}}">
+		<mp-cells title="选择播放速度" slot="desc">
+			<mycheckboxgroup
+			 catch:touchmove="catchTouchMove"
+			 prop="radio"
+			 multi="{{false}}"
+			 ext-class="checkboxGroup"
+			>
+				<mycheckbox
+				 wx:for="{{speedOptions}}"
+				 wx:key="index"
+				 multi="{{false}}"
+				 value="{{item.value}}"
+				 checked="{{item.value === speed}}"
+				 bindchange="confirmSpeed"
+				>
+					<view slot='label' class='pickerRow'>
+						<view style="margin-right: 15px">
+							{{item.icon}}
+						</view>
+						<view>
+							{{item.label}}
+						</view>
+					</view>
+				</mycheckbox>
+			</mycheckboxgroup>
+		</mp-cells>
+
+	</mp-half-screen-dialog>
+
 </view>
 
