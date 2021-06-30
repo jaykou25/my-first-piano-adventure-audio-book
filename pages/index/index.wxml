@@ -52,12 +52,17 @@
 		</view>
 
 		<!-- 播放进度条与速度 -->
-		<view class="audioProgressRow">
+		<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audioProgressRow">
 			<view class="audioProgress">
-				<slider block-size="16" />
+				<slider
+				 block-size="16"
+				 value="{{percent}}"
+				 bindchange="seekAudio"
+				 bindchanging="handleBindChanging"
+				/>
 				<view class="audioProgressText">
-					<text>0:00</text>
-					<text>04:10</text>
+					<text>{{tool.toSongTime(currentTime)}}</text>
+					<text>{{tool.toSongTime(duration)}}</text>
 				</view>
 			</view>
 			<!-- 播放速度 -->

@@ -14,8 +14,20 @@ var pad = function (val) {
   return val;
 };
 
+var toSongTime = function (seconds) {
+  var left = Math.floor(seconds / 60);
+  var right = Math.round(seconds % 60);
+  return pad(left) + ":" + pad(right);
+};
+
+var round = function (val) {
+  return Math.round(val);
+};
+
 module.exports = {
   isPlaying: isPlaying,
   isActive: isActive,
   pad: pad,
+  toSongTime: toSongTime,
+  round: round,
 };

@@ -1,5 +1,6 @@
 // index.js
 // 获取应用实例
+const app = getApp();
 
 const ba = wx.getBackgroundAudioManager();
 
@@ -18,6 +19,7 @@ Page({
     waiting: false,
     currentTime: "",
     duration: "",
+    percent: 0,
     pickerShow: false,
     playMode: 1,
     loading: false,
@@ -31,6 +33,10 @@ Page({
     speed: 1,
     speedLabel: "",
   },
+  isSetSpeed: false,
+  nowTime: 0,
+  shouldPause: false,
+  stopSlider: false,
   onShareAppMessage() {
     return {
       title: "我的钢琴第一课音频素材",
@@ -51,22 +57,46 @@ Page({
 
     // 音频播放进度实时回调
     ba.onTimeUpdate(() => {
-      this.setData({
-        currentTime: ba.currentTime,
-        duration: ba.duration,
-        waiting: false,
+      if (this.stopSlider) {
+        this.setData({
+          currentTime: ba.currentTime,
+          waiting: false,
+          duration: ba.duration,
+        });
+        return;
+      }
+
+      // 当音频播放完毕后避免调用
+      if (ba.currentTime === 0) {
+        this.setData({
+          currentTime: ba.currentTime,
+          waiting: false,
+          percent: 0,
+        });
+      } else {
+        this.setData({
+          currentTime: ba.currentTime,
+          waiting: false,
+          duration: ba.duration,
+          percent: Math.round((ba.currentTime / ba.duration) * 100),
+        });
+      }
+    }),
+      ba.onCanplay(() => {
+        this.setData({
+          loading: false,
+        });
+      }),
+      ba.onWaiting(() => {
+        this.setData({ waiting: true });
       });
-    });
-
-    ba.onCanplay(() => {
-      this.setData({ loading: false });
-    });
-
-    ba.onWaiting(() => {
-      this.setData({ waiting: true });
-    });
 
     ba.onPlay(() => {
+      if (this.shouldPause) {
+        ba.pause();
+        this.shouldPause = false;
+      }
+
       this.setData({ audioStatus: 2 });
     });
 
@@ -77,7 +107,7 @@ Page({
     ba.onError(function (e) {});
 
     ba.onEnded(() => {
-      this.setData({ audioStatus: 0 });
+      this.setData({ audioStatus: 0, currentTime: 0, percent: 0 });
 
       const { playMode } = this.data;
 
@@ -96,7 +126,13 @@ Page({
     });
 
     ba.onStop(() => {
-      this.setData({ audioStatus: 0, playingTrack: {} });
+      console.log("stoped");
+      if (this.isSetSpeed) {
+        this.startPlay(this.data.playingTrack, this.nowTime);
+        this.isSetSpeed = false;
+      } else {
+        this.setData({ audioStatus: 0, playingTrack: {} });
+      }
     });
 
     ba.onNext(function () {
@@ -129,6 +165,14 @@ Page({
       this.setData({ playingTrack: {} });
     } else {
       ba.stop();
+      // 客户端监听不到stop, 这也只是临时的.
+      if (app.globalData.isClient) {
+        wx.showToast({
+          title: "客户端暂不支持关闭后台音频, 能暂停",
+          icon: "none",
+          duration: 2000,
+        });
+      }
     }
   },
   playBack() {
@@ -141,15 +185,26 @@ Page({
       ba.seek(this.data.currentTime + 5);
     }
   },
+  seekAudio(e) {
+    this.stopSlider = false;
+    const { value } = e.detail;
+    const currentTime = this.data.duration * value * 0.01;
+    this.setData({ currentTime });
+    ba.seek(currentTime);
+  },
+  handleBindChanging() {
+    this.stopSlider = true;
+  },
   handleAudioClick(e) {
     const index = e.currentTarget.dataset.index;
     this.handlePlay(index);
   },
-  handlePlay(index) {
+  handlePlay(index, startTime = 0) {
     this.setData({ loading: true });
 
     const { epIndex, playingTrack } = this.data;
     const audio = eps[epIndex].audios[index];
+    console.log("handleplay", playingTrack);
 
     if (index === playingTrack.index && playingTrack.epIndex === epIndex)
       return;
@@ -158,12 +213,16 @@ Page({
       playingTrack: { ...audio, index, epIndex: epIndex },
     });
 
-    this.startPlay(audio);
+    this.startPlay(audio, startTime);
   },
-  startPlay(audio) {
+  startPlay(audio, startTime = 0) {
+    const { epIndex, speed } = this.data;
     ba.title = audio.title;
     ba.src = audio.src;
-    // ba.playbackRate = this.data.speed;
+    ba.startTime = startTime;
+    ba.coverImgUrl = eps[epIndex].img;
+    ba.epname = eps[epIndex].name;
+    ba.playbackRate = speed;
   },
 
   confirmPick(e) {
@@ -186,9 +245,12 @@ Page({
     });
 
     // 处理播放速度的逻辑, 如果正在播放, 应该要先停掉这个歌, 设置好速度后再定位到当时的时间
-    // ba.playbackRate = speed;
-    // ba.pause();
-    // ba.play();
+    this.isSetSpeed = true;
+    this.nowTime = this.data.currentTime;
+    if (this.data.audioStatus === 3) {
+      this.shouldPause = true;
+    }
+    ba.stop();
   },
 
   isPlaying() {

@@ -72,6 +72,7 @@
 
 .playingAudio::after {
   left: 0;
+  height: 0;
 }
 
 .audioImg {
@@ -332,7 +333,7 @@
 .audioProgressRow {
   display: flex;
   align-items: center;
-  padding: 10px 0 16px 11px;
+  padding: 0 0 20px 11px;
   border-bottom: 1px solid #ededed;
 }
 
@@ -342,7 +343,7 @@
 }
 
 .audioProgressText {
-  bottom: -10px;
+  bottom: -12px;
   left: 0;
   right: 0;
   position: absolute;
@@ -350,7 +351,7 @@
   justify-content: space-between;
   align-items: center;
 
-  font-size: 10px;
+  font-size: 12px;
   margin: 0 9px;
 }
 
