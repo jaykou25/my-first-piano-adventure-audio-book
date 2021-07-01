@@ -143,13 +143,6 @@
 	</view>
 
 	<mp-half-screen-dialog extClass='picker' show="{{pickerShow}}" closabled="{{false}}">
-		<!-- <view slot='title' class="pickerTitle" catch:touchmove="catchTouchMove">
-			<view class="flexBetween">
-				<text class="cancelText" bindtap="toPickerHide" >取消</text>
-				<text class='confirmText' bindtap="confirmPick" >确认</text>
-			</view>
-		</view> -->
-
 		<mp-cells title="选择课程" slot="desc">
 			<mycheckboxgroup prop="radio" multi="{{false}}" ext-class="checkboxGroup">
 				<mycheckbox
