@@ -37,7 +37,7 @@
 	<view class="bottom-area">
 		<!-- 菜单按钮 -->
 		<view class='icon-wrapper iconMenu' hover-class="iconMenuHover" bindtap='toPickerShow'>
-			<i class="ri-menu-fill ri-lg" />
+			<i class="ri-menu-fill ri-lg" style="font-size: 1.3em" />
 		</view>
 
 		<!-- 正在播放 -->
@@ -67,8 +67,11 @@
 			</view>
 			<!-- 播放速度 -->
 			<view class="audioSpeed" bindtap="toSpeedShow">
-				<text wx:if="{{speed === 1}}">倍速</text>
-				<text wx:else>{{speedLabel}}</text>
+				<text wx:if="{{!speed }}">倍速</text>
+				<view wx:else class='speedLabel'>
+					<view style="margin-right: 2px">{{speedIcon}}</view>
+					<view>{{speedLabel}}</view>
+				</view>
 			</view>
 		</view>
 

@@ -363,3 +363,8 @@
   font-weight: 600;
   font-size: 16px;
 }
+
+.speedLabel {
+  display: flex;
+  align-items: center;
+}

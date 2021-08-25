@@ -30,8 +30,9 @@ Page({
       { value: 1.25, label: "1.25X", icon: "🐇" },
       { value: 1.5, label: "1.5X", icon: "🐆" },
     ],
-    speed: 1,
+    speed: "",
     speedLabel: "",
+    speedIcon: "",
   },
   isSetSpeed: false,
   nowTime: 0,
@@ -224,7 +225,9 @@ Page({
     ba.startTime = startTime;
     ba.coverImgUrl = eps[epIndex].img;
     ba.epname = eps[epIndex].name;
-    ba.playbackRate = speed;
+    if (speed) {
+      ba.playbackRate = speed;
+    }
   },
   confirmPick(e) {
     const index = +e.detail.value;
@@ -240,6 +243,7 @@ Page({
     const target = this.data.speedOptions.find((op) => op.value === speed);
     this.setData({
       speed,
+      speedIcon: target.icon,
       speedLabel: target.label,
       speedShow: false,
     });
@@ -284,8 +288,10 @@ Page({
   },
   playNext() {
     const { playingTrack, epIndex } = this.data;
-    if (playingTrack.index < eps[epIndex].audios.length) {
+    if (playingTrack.index < eps[epIndex].audios.length - 1) {
       this.handlePlay(playingTrack.index + 1);
+    } else {
+      this.setData({ playingTrack: {} });
     }
   },
 });
