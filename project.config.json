@@ -41,7 +41,7 @@
   "compileType": "miniprogram",
   "libVersion": "2.11.0",
   "appid": "wxb48c8ff77a980807",
-  "projectname": "miniprogram-1",
+  "projectname": "piano_adventure",
   "debugOptions": {
     "hidedInDevtools": []
   },

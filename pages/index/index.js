@@ -4,16 +4,21 @@ const app = getApp();
 
 const ba = wx.getBackgroundAudioManager();
 
-const eps = require("./audios");
+const epsCn = require("./audios");
+const epsEn = require("./audiosEn");
+
+const NEW_EPNAME = "音阶练习";
 
 Page({
   data: {
-    eps,
-    epIndex: 0,
+    eps: { cn: epsCn, en: epsEn },
+    version: "cn",
+    visualVersion: "cn",
+    epName: "我的钢琴第一课·A级",
     playingTrack: {
       index: "",
       title: "",
-      epIndex: "",
+      epName: "我的钢琴第一课·A级",
     },
     audioStatus: 0, // 0 默认, 2 playing, 3 pause,
     waiting: false, // 歌曲快进时会有waiting
@@ -33,6 +38,8 @@ Page({
     speed: "",
     speedLabel: "",
     speedIcon: "",
+    showNotice: false,
+    newEpName: NEW_EPNAME,
   },
   isSetSpeed: false,
   nowTime: 0,
@@ -52,9 +59,20 @@ Page({
     };
   },
   onLoad() {
-    const defaultEpIndex = wx.getStorageSync("epIndex") || 0;
+    const defaultEpName = wx.getStorageSync("epName") || "我的钢琴第一课·A级";
     const defaultPlayMode = wx.getStorageSync("playMode") || 1;
-    this.setData({ epIndex: defaultEpIndex, playMode: defaultPlayMode });
+    const defaultVersion = wx.getStorageSync("version") || "cn";
+    const noticeSetting = !!wx.getStorageSync("notice");
+    this.setData({
+      epName: defaultEpName,
+      playMode: defaultPlayMode,
+      version: defaultVersion,
+      visualVersion: defaultVersion,
+      showNotice: !noticeSetting, // 没有设置就显示通知
+    });
+
+    // 读取云数据库内容
+    this.queryToneExerciseAudios();
 
     // 音频播放进度实时回调
     ba.onTimeUpdate(() => {
@@ -205,38 +223,45 @@ Page({
   handlePlay(index) {
     this.setData({ loading: true });
 
-    const { epIndex, playingTrack } = this.data;
-    const audio = eps[epIndex].audios[index];
+    const { epName, playingTrack, version, eps } = this.data;
+    const audio = eps[version].find((ep) => ep.name === epName).audios[index];
 
     // 正在播放的音频点击忽略
-    if (index === playingTrack.index && playingTrack.epIndex === epIndex)
-      return;
+    if (index === playingTrack.index && playingTrack.epName === epName) return;
 
     this.setData({
-      playingTrack: { ...audio, index, epIndex: epIndex },
+      playingTrack: { ...audio, index, epName: epName },
     });
 
     this.startPlay(audio);
   },
   startPlay(audio, startTime = 0) {
-    const { epIndex, speed } = this.data;
+    const { epName, speed, version, eps } = this.data;
+    const targetEp = eps[version].find((ep) => ep.name === epName);
     ba.title = audio.title;
     ba.src = audio.src;
     ba.startTime = startTime;
-    ba.coverImgUrl = eps[epIndex].img;
-    ba.epname = eps[epIndex].name;
+    ba.coverImgUrl = targetEp.img;
+    ba.epname = targetEp.name;
     if (speed) {
       ba.playbackRate = speed;
     }
   },
   confirmPick(e) {
-    const index = +e.detail.value;
+    const epName = e.detail.value;
     this.setData({
-      epIndex: index,
+      epName,
       pickerShow: false,
+      version: this.data.visualVersion,
     });
 
-    wx.setStorageSync("epIndex", index);
+    if (epName === NEW_EPNAME) {
+      this.setData({ showNotice: false });
+    }
+    wx.setStorageSync("notice", "1");
+
+    wx.setStorageSync("epName", epName);
+    wx.setStorageSync("version", this.data.visualVersion);
   },
   confirmSpeed(e) {
     const speed = +e.detail.value;
@@ -287,11 +312,22 @@ Page({
     wx.setStorageSync("playMode", mode + 1);
   },
   playNext() {
-    const { playingTrack, epIndex } = this.data;
-    if (playingTrack.index < eps[epIndex].audios.length - 1) {
+    const { playingTrack, epName, version, eps } = this.data;
+    const targetEp = eps[version].find((ep) => ep.name === epName);
+    if (playingTrack.index < targetEp.audios.length - 1) {
       this.handlePlay(playingTrack.index + 1);
     } else {
       this.setData({ playingTrack: {} });
     }
+  },
+  toggleVersion(e) {
+    const version = e.currentTarget.dataset.version;
+    this.setData({ visualVersion: version });
+  },
+  async queryToneExerciseAudios() {
+    const db = wx.cloud.database();
+    const res = await db.collection("audios").where({}).limit(100).get();
+    epsCn[0].audios = res.data;
+    this.setData({ eps: { cn: epsCn, en: epsEn } });
   },
 });

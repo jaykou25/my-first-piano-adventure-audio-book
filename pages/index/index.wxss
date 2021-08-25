@@ -149,6 +149,17 @@
   height: 40px;
 }
 
+.iconMenuHasNew::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: red;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .iconMenuHover {
   background-color: rgba(237, 237, 237, 1);
 }
@@ -275,6 +286,13 @@
     calc(env(safe-area-inset-left));
 }
 
+.picker.eps .weui-half-screen-dialog__hd {
+  display: block;
+  position: absolute;
+  right: 20px;
+  top: 18px;
+}
+
 .picker .weui-half-screen-dialog__hd {
   display: none;
 }
@@ -319,6 +337,22 @@
   align-items: center;
   /* height: 60px; */
   font-size: 18px;
+}
+
+.pickerImg {
+  position: relative;
+  margin-right: 12px;
+}
+
+.pickerImgHasNew::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: red;
+  position: absolute;
+  top: -3px;
+  right: -3px;
 }
 
 .icon-hover {
@@ -367,4 +401,18 @@
 .speedLabel {
   display: flex;
   align-items: center;
+}
+
+.versionTabs {
+  font-weight: normal;
+}
+
+.tab {
+  padding-bottom: 2px;
+  color: var(--weui-FG-1);
+}
+
+.tabActive {
+  border-bottom: 2px solid var(--wechat-green);
+  color: rgba(0, 0, 0, 0.8);
 }

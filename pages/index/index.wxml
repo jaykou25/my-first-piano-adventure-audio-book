@@ -3,25 +3,29 @@
 <view class="container">
 
 	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}">
-		<view class='header'>{{eps[epIndex].name}}</view>
+		<view class='header'>{{tool.targetEp(eps, version, epName).name}}</view>
 
-		<view class="audio-list">
+		<view class="audio-list" wx:if="{{tool.targetEp(eps, version, epName).audios.length > 0}}">
 			<view
-			 class="audio-item {{tool.isActive(index, playingTrack, epIndex) ? 'active' : ''}}"
-			 wx:for="{{eps[epIndex].audios}}"
+			 class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
+			 wx:for="{{tool.targetEp(eps, version, epName).audios}}"
 			 wx:key="index"
 			 bindtap="handleAudioClick"
 			 data-index="{{index}}"
 			 data-audio="{{item}}"
 			>
-				<image class="audioImg" src="{{eps[epIndex].img}}" />
+				<image class="audioImg" src="{{tool.targetEp(eps, version, epName).img}}" />
 				<view class="audioIndex">{{tool.pad(index + 1)}}</view>
 				<view class="audioTitle">{{item.title}}</view>
 				<view class="audioLength">{{item.length}}</view>
 			</view>
 		</view>
 
-		<view class="info">
+		<view wx:else class="info">
+			<text>无内容</text>
+		</view>
+
+		<view class="info" wx:if="{{tool.targetEp(eps, version, epName).name !== '音阶练习'}}">
 			<view>
 				<text>本页面素材来自菲伯尔钢琴官网</text>
 			</view>
@@ -36,13 +40,13 @@
 
 	<view class="bottom-area">
 		<!-- 菜单按钮 -->
-		<view class='icon-wrapper iconMenu' hover-class="iconMenuHover" bindtap='toPickerShow'>
+		<view class="icon-wrapper iconMenu {{showNotice ? 'iconMenuHasNew' : ''}}" hover-class="iconMenuHover" bindtap='toPickerShow'>
 			<i class="ri-menu-fill ri-lg" style="font-size: 1.3em" />
 		</view>
 
 		<!-- 正在播放 -->
 		<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active playingAudio">
-			<image class="audioImg" src="{{eps[playingTrack.epIndex].img}}" />
+			<image class="audioImg" src="{{tool.targetEp(eps, version, playingTrack.epName).img}}" />
 			<view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
 			<view class="audioTitle">{{playingTrack.title}}</view>
 			<view class='icon-wrapper iconClose' bindtap='closePlaying'>
@@ -145,19 +149,26 @@
 		</view>
 	</view>
 
-	<mp-half-screen-dialog extClass='picker' show="{{pickerShow}}" closabled="{{false}}">
-		<mp-cells title="选择课程" slot="desc">
+	<mp-half-screen-dialog extClass='picker eps' show="{{pickerShow}}" closabled="{{false}}">
+		<view class='versionTabs' slot='title'>
+			<text class="tab {{visualVersion === 'cn' ? 'tabActive' : ''}}" style="margin-right: 20px;" bindtap="toggleVersion" data-version="cn" >中文版本</text>
+			<text class="tab {{visualVersion === 'en' ? 'tabActive' : ''}}" bindtap="toggleVersion" data-version='en' >英文版本</text>
+		</view>
+		<mp-cells title="选择课程" slot="desc" ext-class='chooseClassTitle'>
+
 			<mycheckboxgroup prop="radio" multi="{{false}}" ext-class="checkboxGroup">
 				<mycheckbox
-				 wx:for="{{eps}}"
+				 wx:for="{{tool.versionEps(eps, visualVersion)}}"
 				 wx:key="index"
 				 multi="{{false}}"
-				 value="{{index}}"
-				 checked="{{index === epIndex}}"
+				 value="{{item.name}}"
+				 checked="{{item.name === epName && version === visualVersion}}"
 				 bindchange="confirmPick"
 				>
 					<view slot='label' class='pickerRow'>
-						<image style="flex: none; width: 48px; height: 48px; margin-right: 12px" src="{{item.img}}" />
+						<view class="pickerImg {{(newEpName === item.name && showNotice) ? 'pickerImgHasNew' : ''}}">
+							<image style="flex: none; width: 48px; height: 48px;" src="{{item.img}}" />
+						</view>
 						<view>
 							{{item.name}}
 						</view>

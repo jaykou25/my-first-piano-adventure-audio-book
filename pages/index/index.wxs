@@ -2,8 +2,8 @@ var isPlaying = function (track) {
   return !!track.index || track.index === 0;
 };
 
-var isActive = function (index, track, epIndex) {
-  return index === track.index && track.epIndex === epIndex;
+var isActive = function (index, track, epName) {
+  return index === track.index && track.epName === epName;
 };
 
 var pad = function (val) {
@@ -24,10 +24,22 @@ var round = function (val) {
   return Math.round(val);
 };
 
+var versionEps = function (eps, version) {
+  return eps[version];
+};
+
+var targetEp = function (eps, version, epName) {
+  return eps[version].filter(function (ep) {
+    return ep.name === epName;
+  })[0];
+};
+
 module.exports = {
   isPlaying: isPlaying,
   isActive: isActive,
   pad: pad,
   toSongTime: toSongTime,
   round: round,
+  versionEps: versionEps,
+  targetEp: targetEp,
 };
