@@ -157,11 +157,19 @@ Page({
       }
     });
 
-    ba.onNext(function () {
+    ba.onNext(() => {
       console.log("onNext");
+      this.playNext();
     });
-    ba.onPrev(function () {
+    ba.onPrev(() => {
       console.log("onPrev");
+      // 如果当前歌曲播放时间大于3秒就重放, 小于3秒就播上一曲
+      const { currentTime } = this.data;
+      if (currentTime < 3) {
+        this.playPrev();
+      } else {
+        this.refresh();
+      }
     });
   },
   pause() {
@@ -318,6 +326,15 @@ Page({
       this.handlePlay(playingTrack.index + 1);
     } else {
       this.setData({ playingTrack: {} });
+    }
+  },
+  playPrev() {
+    // 当前是第一曲的话就重放
+    const { playingTrack, epName, version, eps } = this.data;
+    if (playingTrack.index === 0) {
+      this.refresh();
+    } else {
+      this.handlePlay(playingTrack.index - 1);
     }
   },
   toggleVersion(e) {
