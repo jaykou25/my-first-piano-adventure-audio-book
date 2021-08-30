@@ -40,6 +40,7 @@ Page({
     speedIcon: "",
     showNotice: false,
     newEpName: NEW_EPNAME,
+    contentLoading: false, // 从数据库获取音频内容
   },
   isSetSpeed: false,
   nowTime: 0,
@@ -343,8 +344,13 @@ Page({
   },
   async queryToneExerciseAudios() {
     const db = wx.cloud.database();
-    const res = await db.collection("audios").where({}).limit(100).get();
-    epsCn[0].audios = res.data;
-    this.setData({ eps: { cn: epsCn, en: epsEn } });
+    this.setData({ contentLoading: true });
+    try {
+      const res = await db.collection("audios").where({}).limit(100).get();
+      epsCn[0].audios = res.data;
+      this.setData({ eps: { cn: epsCn, en: epsEn }, contentLoading: false });
+    } catch (e) {
+      this.setData({ contentLoading: false });
+    }
   },
 });

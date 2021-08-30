@@ -4,35 +4,39 @@
 
 	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}">
 		<view class='header'>{{tool.targetEp(eps, version, epName).name}}</view>
-
-		<view class="audio-list" wx:if="{{tool.targetEp(eps, version, epName).audios.length > 0}}">
-			<view
-			 class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
-			 wx:for="{{tool.targetEp(eps, version, epName).audios}}"
-			 wx:key="index"
-			 bindtap="handleAudioClick"
-			 data-index="{{index}}"
-			 data-audio="{{item}}"
-			>
-				<image class="audioImg" src="{{tool.targetEp(eps, version, epName).img}}" />
-				<view class="audioIndex">{{tool.pad(index + 1)}}</view>
-				<view class="audioTitle">{{item.title}}</view>
-				<view class="audioLength">{{item.length}}</view>
+		<block wx:if="{{contentLoading && tool.targetEp(eps, version, epName).name === newEpName }}">
+			<mp-loading type='circle' animated />
+		</block>
+		<block wx:else>
+			<view class="audio-list" wx:if="{{tool.targetEp(eps, version, epName).audios.length > 0}}">
+				<view
+				 class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
+				 wx:for="{{tool.targetEp(eps, version, epName).audios}}"
+				 wx:key="index"
+				 bindtap="handleAudioClick"
+				 data-index="{{index}}"
+				 data-audio="{{item}}"
+				>
+					<image class="audioImg" src="{{tool.targetEp(eps, version, epName).img}}" />
+					<view class="audioIndex">{{tool.pad(index + 1)}}</view>
+					<view class="audioTitle">{{item.title}}</view>
+					<view class="audioLength">{{item.length}}</view>
+				</view>
 			</view>
-		</view>
 
-		<view wx:else class="info">
-			<text>无内容</text>
-		</view>
+			<view wx:else class="info">
+				<text>无内容</text>
+			</view>
 
-		<view class="info" wx:if="{{tool.targetEp(eps, version, epName).name !== '音阶练习'}}">
-			<view>
-				<text>本页面素材来自菲伯尔钢琴官网</text>
+			<view class="info" wx:if="{{tool.targetEp(eps, version, epName).name !== '音阶练习'}}">
+				<view>
+					<text>本页面素材来自菲伯尔钢琴官网</text>
+				</view>
+				<view>
+					https://pianoadventures.cn
+				</view>
 			</view>
-			<view>
-				https://pianoadventures.cn
-			</view>
-		</view>
+		</block>
 
 		<view class="footer" />
 
