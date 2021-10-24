@@ -28,12 +28,18 @@
 				<text>无内容</text>
 			</view>
 
-			<view class="info" wx:if="{{tool.targetEp(eps, version, epName).name !== '音阶练习'}}">
+			<view class="info" wx:if="{{tool.targetEp(eps, version, epName).version}}">
 				<view>
 					<text>本页面素材来自菲伯尔钢琴官网</text>
 				</view>
 				<view>
 					https://pianoadventures.cn
+				</view>
+			</view>
+
+            <view class="info" wx:if="{{tool.targetEp(eps, version, epName)._id}}">
+				<view>
+					<text>本页面素材来自教材CD</text>
 				</view>
 			</view>
 		</block>

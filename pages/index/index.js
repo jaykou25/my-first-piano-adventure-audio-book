@@ -74,6 +74,7 @@ Page({
 
     // 读取云数据库内容
     this.queryToneExerciseAudios();
+    this.queryCloudEps()
 
     // 音频播放进度实时回调
     ba.onTimeUpdate(() => {
@@ -353,4 +354,12 @@ Page({
       this.setData({ contentLoading: false });
     }
   },
+  queryCloudEps() {
+    const db = wx.cloud.database();
+      db.collection("eps").where({}).limit(100).get(
+      ).then(res => {
+        console.log('res', res.data)
+        this.setData({eps: {cn: epsCn.concat(res.data), en: epsEn}})
+      })
+  }
 });
