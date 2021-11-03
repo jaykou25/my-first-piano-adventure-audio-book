@@ -37,7 +37,7 @@
 				</view>
 			</view>
 
-            <view class="info" wx:if="{{tool.targetEp(eps, version, epName)._id}}">
+			<view class="info" wx:if="{{tool.targetEp(eps, version, epName)._id}}">
 				<view>
 					<text>本页面素材来自教材CD</text>
 				</view>
@@ -171,7 +171,7 @@
 				 wx:for="{{tool.versionEps(eps, visualVersion)}}"
 				 wx:key="index"
 				 multi="{{false}}"
-				 value="{{item.name}}"
+				 value="{{item.name + ',' + item._id}}"
 				 checked="{{item.name === epName && version === visualVersion}}"
 				 bindchange="confirmPick"
 				>

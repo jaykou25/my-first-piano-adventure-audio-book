@@ -9,6 +9,12 @@ const epsEn = require("./audiosEn");
 
 const NEW_EPNAME = "音阶练习";
 
+const targetEp = (eps, version, epName) => {
+  return eps[version].filter(function (ep) {
+    return ep.name === epName;
+  })[0];
+};
+
 Page({
   data: {
     eps: { cn: epsCn, en: epsEn },
@@ -61,6 +67,7 @@ Page({
   },
   onLoad() {
     const defaultEpName = wx.getStorageSync("epName") || "我的钢琴第一课·A级";
+    const defaultEpId = wx.getStorageSync("epId");
     const defaultPlayMode = wx.getStorageSync("playMode") || 1;
     const defaultVersion = wx.getStorageSync("version") || "cn";
     const noticeSetting = !!wx.getStorageSync("notice");
@@ -74,7 +81,7 @@ Page({
 
     // 读取云数据库内容
     this.queryToneExerciseAudios();
-    this.queryCloudEps()
+    this.queryCloudEps(defaultEpId);
 
     // 音频播放进度实时回调
     ba.onTimeUpdate(() => {
@@ -249,7 +256,14 @@ Page({
     const { epName, speed, version, eps } = this.data;
     const targetEp = eps[version].find((ep) => ep.name === epName);
     ba.title = audio.title;
-    ba.src = audio.src;
+
+    console.log("audio", audio);
+    if (audio._id) {
+      ba.src = "https://www.ttnote.cn" + audio.filePath;
+    } else {
+      ba.src = audio.src;
+    }
+
     ba.startTime = startTime;
     ba.coverImgUrl = targetEp.img;
     ba.epname = targetEp.name;
@@ -258,7 +272,8 @@ Page({
     }
   },
   confirmPick(e) {
-    const epName = e.detail.value;
+    const [epName, epId] = e.detail.value.split(",");
+
     this.setData({
       epName,
       pickerShow: false,
@@ -271,7 +286,12 @@ Page({
     wx.setStorageSync("notice", "1");
 
     wx.setStorageSync("epName", epName);
+    wx.setStorageSync("epId", epId);
     wx.setStorageSync("version", this.data.visualVersion);
+
+    if (epId !== "undefined") {
+      this.queryCloudTracks(epId);
+    }
   },
   confirmSpeed(e) {
     const speed = +e.detail.value;
@@ -354,12 +374,33 @@ Page({
       this.setData({ contentLoading: false });
     }
   },
-  queryCloudEps() {
+  queryCloudEps(defaultEpId) {
     const db = wx.cloud.database();
-      db.collection("eps").where({}).limit(100).get(
-      ).then(res => {
-        console.log('res', res.data)
-        this.setData({eps: {cn: epsCn.concat(res.data), en: epsEn}})
+    db.collection("eps")
+      .where({})
+      .limit(100)
+      .get()
+      .then((res) => {
+        this.setData({ eps: { cn: epsCn.concat(res.data), en: epsEn } });
+
+        if (defaultEpId) this.queryCloudTracks(defaultEpId);
+      });
+  },
+  queryCloudTracks(epId) {
+    this.setData({ contentLoading: true });
+    const eps = this.data.eps;
+    const db = wx.cloud.database();
+    db.collection("tracks")
+      .where({ epId })
+      .limit(200)
+      .get()
+      .then((res) => {
+        const ep = eps.cn.find(($ep) => $ep._id === epId);
+        ep.audios = res.data;
+        this.setData({ eps });
       })
-  }
+      .finally(() => {
+        this.setData({ contentLoading: false });
+      });
+  },
 });
