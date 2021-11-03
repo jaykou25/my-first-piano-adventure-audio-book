@@ -171,7 +171,8 @@
 				 wx:for="{{tool.versionEps(eps, visualVersion)}}"
 				 wx:key="index"
 				 multi="{{false}}"
-				 value="{{item.name + ',' + item._id}}"
+				 data-id="{{item._id}}"
+				 data-name="{{item.name}}"
 				 checked="{{item.name === epName && version === visualVersion}}"
 				 bindchange="confirmPick"
 				>

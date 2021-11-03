@@ -258,8 +258,8 @@ Page({
     ba.title = audio.title;
 
     console.log("audio", audio);
-    if (audio._id) {
-      ba.src = "https://www.ttnote.cn" + audio.filePath;
+    if (audio.epId) {
+      ba.src = "https://www.ttnote.cn" + audio.src;
     } else {
       ba.src = audio.src;
     }
@@ -272,7 +272,9 @@ Page({
     }
   },
   confirmPick(e) {
-    const [epName, epId] = e.detail.value.split(",");
+    const epName  = e.currentTarget.dataset.name;
+    const epId = e.currentTarget.dataset.id
+    console.log('confirmPick', epId, epName)
 
     this.setData({
       epName,
@@ -289,8 +291,13 @@ Page({
     wx.setStorageSync("epId", epId);
     wx.setStorageSync("version", this.data.visualVersion);
 
-    if (epId !== "undefined") {
-      this.queryCloudTracks(epId);
+
+    if (epId) {
+      const eps = this.data.eps
+      const ep = eps.cn.find(($ep) => $ep._id === epId);
+      if (!ep.audios) {
+        this.queryCloudTracks(epId);
+      }
     }
   },
   confirmSpeed(e) {
@@ -383,6 +390,7 @@ Page({
       .then((res) => {
         this.setData({ eps: { cn: epsCn.concat(res.data), en: epsEn } });
 
+        console.log("defaultEpId", defaultEpId)
         if (defaultEpId) this.queryCloudTracks(defaultEpId);
       });
   },
@@ -392,7 +400,7 @@ Page({
     const db = wx.cloud.database();
     db.collection("tracks")
       .where({ epId })
-      .limit(200)
+      .limit(100)
       .get()
       .then((res) => {
         const ep = eps.cn.find(($ep) => $ep._id === epId);
