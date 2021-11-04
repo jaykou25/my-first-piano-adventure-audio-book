@@ -4,7 +4,7 @@
 
 	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}">
 		<view class='header'>{{tool.targetEp(eps, version, epName).name}}</view>
-		<block wx:if="{{contentLoading && tool.targetEp(eps, version, epName).name === newEpName }}">
+		<block wx:if="{{contentLoading}}">
 			<mp-loading type='circle' animated />
 		</block>
 		<block wx:else>

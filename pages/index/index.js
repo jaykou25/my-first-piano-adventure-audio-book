@@ -9,22 +9,16 @@ const epsEn = require("./audiosEn");
 
 const NEW_EPNAME = "音阶练习";
 
-const targetEp = (eps, version, epName) => {
-  return eps[version].filter(function (ep) {
-    return ep.name === epName;
-  })[0];
-};
-
 Page({
   data: {
     eps: { cn: epsCn, en: epsEn },
     version: "cn",
-    visualVersion: "cn",
-    epName: "我的钢琴第一课·A级",
+    visualVersion: "",
+    epName: "",
     playingTrack: {
       index: "",
       title: "",
-      epName: "我的钢琴第一课·A级",
+      epName: "",
     },
     audioStatus: 0, // 0 默认, 2 playing, 3 pause,
     waiting: false, // 歌曲快进时会有waiting
@@ -80,7 +74,6 @@ Page({
     });
 
     // 读取云数据库内容
-    this.queryToneExerciseAudios();
     this.queryCloudEps(defaultEpId);
 
     // 音频播放进度实时回调
@@ -257,7 +250,6 @@ Page({
     const targetEp = eps[version].find((ep) => ep.name === epName);
     ba.title = audio.title;
 
-    console.log("audio", audio);
     if (audio.epId) {
       ba.src = "https://www.ttnote.cn" + audio.src;
     } else {
@@ -272,9 +264,8 @@ Page({
     }
   },
   confirmPick(e) {
-    const epName  = e.currentTarget.dataset.name;
-    const epId = e.currentTarget.dataset.id
-    console.log('confirmPick', epId, epName)
+    const epName = e.currentTarget.dataset.name;
+    const epId = e.currentTarget.dataset.id;
 
     this.setData({
       epName,
@@ -291,9 +282,8 @@ Page({
     wx.setStorageSync("epId", epId);
     wx.setStorageSync("version", this.data.visualVersion);
 
-
     if (epId) {
-      const eps = this.data.eps
+      const eps = this.data.eps;
       const ep = eps.cn.find(($ep) => $ep._id === epId);
       if (!ep.audios) {
         this.queryCloudTracks(epId);
@@ -371,12 +361,13 @@ Page({
     this.setData({ visualVersion: version });
   },
   async queryToneExerciseAudios() {
+    const eps = this.data.eps;
     const db = wx.cloud.database();
     this.setData({ contentLoading: true });
     try {
       const res = await db.collection("audios").where({}).limit(100).get();
-      epsCn[0].audios = res.data;
-      this.setData({ eps: { cn: epsCn, en: epsEn }, contentLoading: false });
+      eps.cn[0].audios = res.data;
+      this.setData({ eps, contentLoading: false });
     } catch (e) {
       this.setData({ contentLoading: false });
     }
@@ -390,25 +381,38 @@ Page({
       .then((res) => {
         this.setData({ eps: { cn: epsCn.concat(res.data), en: epsEn } });
 
-        console.log("defaultEpId", defaultEpId)
+        this.queryToneExerciseAudios();
+
         if (defaultEpId) this.queryCloudTracks(defaultEpId);
       });
   },
   queryCloudTracks(epId) {
     this.setData({ contentLoading: true });
     const eps = this.data.eps;
-    const db = wx.cloud.database();
-    db.collection("tracks")
-      .where({ epId })
-      .limit(100)
-      .get()
+
+    wx.cloud
+      .callFunction({
+        name: "queryTracks",
+        data: {
+          epId,
+        },
+      })
       .then((res) => {
         const ep = eps.cn.find(($ep) => $ep._id === epId);
-        ep.audios = res.data;
+        ep.audios = res.result.data;
         this.setData({ eps });
       })
       .finally(() => {
         this.setData({ contentLoading: false });
+      });
+  },
+  queryNewEpIds() {
+    const db = wx.cloud.database();
+    db.collection("newEps")
+      .limit(1)
+      .get()
+      .then((res) => {
+        console.log("res", res);
       });
   },
 });
