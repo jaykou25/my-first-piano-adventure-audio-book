@@ -50,7 +50,7 @@
 
 	<view class="bottom-area">
 		<!-- 菜单按钮 -->
-		<view class="icon-wrapper iconMenu {{showNotice ? 'iconMenuHasNew' : ''}}" hover-class="iconMenuHover" bindtap='toPickerShow'>
+		<view class="icon-wrapper iconMenu {{tool.menuShowNotice(oldEpIds, newEpIds) ? 'iconMenuHasNew' : ''}}" hover-class="iconMenuHover" bindtap='toPickerShow'>
 			<i class="ri-menu-fill ri-lg" style="font-size: 1.3em" />
 		</view>
 
@@ -173,11 +173,12 @@
 				 multi="{{false}}"
 				 data-id="{{item._id}}"
 				 data-name="{{item.name}}"
+				 data-notice="{{tool.epShowNotice(item._id, oldEpIds, newEpIds)}}"
 				 checked="{{item.name === epName && version === visualVersion}}"
 				 bindchange="confirmPick"
 				>
 					<view slot='label' class='pickerRow'>
-						<view class="pickerImg {{(newEpName === item.name && showNotice) ? 'pickerImgHasNew' : ''}}">
+						<view class="pickerImg {{(tool.epShowNotice(item._id, oldEpIds, newEpIds)) ? 'pickerImgHasNew' : ''}}">
 							<image style="flex: none; width: 48px; height: 48px;" src="{{item.img}}" />
 						</view>
 						<view>

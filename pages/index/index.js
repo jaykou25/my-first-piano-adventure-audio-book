@@ -7,8 +7,6 @@ const ba = wx.getBackgroundAudioManager();
 const epsCn = require("./audios");
 const epsEn = require("./audiosEn");
 
-const NEW_EPNAME = "音阶练习";
-
 Page({
   data: {
     eps: { cn: epsCn, en: epsEn },
@@ -39,7 +37,8 @@ Page({
     speedLabel: "",
     speedIcon: "",
     showNotice: false,
-    newEpName: NEW_EPNAME,
+    oldEpIds: [], // 缓存中的epIds, 用于通知小红点
+    newEpIds: [], // 请求到的新epIds, 用于通知小红点
     contentLoading: false, // 从数据库获取音频内容
   },
   isSetSpeed: false,
@@ -64,17 +63,19 @@ Page({
     const defaultEpId = wx.getStorageSync("epId");
     const defaultPlayMode = wx.getStorageSync("playMode") || 1;
     const defaultVersion = wx.getStorageSync("version") || "cn";
-    const noticeSetting = !!wx.getStorageSync("notice");
+    const oldEpIds = wx.getStorageSync("oldEpIds");
+
     this.setData({
       epName: defaultEpName,
       playMode: defaultPlayMode,
       version: defaultVersion,
       visualVersion: defaultVersion,
-      showNotice: !noticeSetting, // 没有设置就显示通知
+      oldEpIds: oldEpIds ? oldEpIds.split(",") : [],
     });
 
     // 读取云数据库内容
     this.queryCloudEps(defaultEpId);
+    this.queryNewEpIds();
 
     // 音频播放进度实时回调
     ba.onTimeUpdate(() => {
@@ -266,6 +267,9 @@ Page({
   confirmPick(e) {
     const epName = e.currentTarget.dataset.name;
     const epId = e.currentTarget.dataset.id;
+    const notice = e.currentTarget.dataset.notice;
+
+    const { oldEpIds } = this.data;
 
     this.setData({
       epName,
@@ -273,10 +277,10 @@ Page({
       version: this.data.visualVersion,
     });
 
-    if (epName === NEW_EPNAME) {
-      this.setData({ showNotice: false });
+    if (notice) {
+      this.setData({ oldEpIds: oldEpIds.concat(epId) });
+      wx.setStorageSync("oldEpIds", oldEpIds.concat(epId).join(","));
     }
-    wx.setStorageSync("notice", "1");
 
     wx.setStorageSync("epName", epName);
     wx.setStorageSync("epId", epId);
@@ -406,13 +410,15 @@ Page({
         this.setData({ contentLoading: false });
       });
   },
+  // 用于显示通知小红点
   queryNewEpIds() {
     const db = wx.cloud.database();
     db.collection("newEps")
       .limit(1)
       .get()
       .then((res) => {
-        console.log("res", res);
+        const ids = res.data[0] ? res.data[0].newEpIds : [];
+        this.setData({ newEpIds: ids });
       });
   },
 });

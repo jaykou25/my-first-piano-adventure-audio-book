@@ -36,6 +36,26 @@ var targetEp = function (eps, version, epName) {
   );
 };
 
+var menuShowNotice = function (oldIds, newIds) {
+  if (!newIds.length) return false;
+
+  var result = false;
+
+  for (var i = 0; i < newIds.length; i++) {
+    var newId = newIds[i];
+    if (oldIds.indexOf(newId) < 0) {
+      result = true;
+      break;
+    }
+  }
+
+  return result;
+};
+
+var epShowNotice = function (epId, oldIds, newIds) {
+  return newIds.indexOf(epId) > -1 && oldIds.indexOf(epId) == -1;
+};
+
 module.exports = {
   isPlaying: isPlaying,
   isActive: isActive,
@@ -44,4 +64,6 @@ module.exports = {
   round: round,
   versionEps: versionEps,
   targetEp: targetEp,
+  menuShowNotice: menuShowNotice,
+  epShowNotice: epShowNotice,
 };
