@@ -253,8 +253,10 @@ Page({
 
     if (audio.epId) {
       ba.src = "https://www.ttnote.cn" + audio.src;
-    } else {
+    } else if (audio._id) {
       ba.src = audio.src;
+    } else {
+      ba.src = audio.src.replace('https://pianoadventures.cn/', 'https://www.ttnote.cn/' );
     }
 
     ba.startTime = startTime;
