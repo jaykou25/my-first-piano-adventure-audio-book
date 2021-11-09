@@ -32,7 +32,7 @@ var targetEp = function (eps, version, epName) {
   return (
     eps[version].filter(function (ep) {
       return ep.name === epName;
-    })[0] || { audios: [] }
+    })[0] || {}
   );
 };
 

@@ -8,7 +8,8 @@
 			<mp-loading type='circle' animated />
 		</block>
 		<block wx:else>
-			<view class="audio-list" wx:if="{{tool.targetEp(eps, version, epName).audios.length > 0}}">
+			<view wx:if="{{!epName || !tool.targetEp(eps, version, epName).audios}}" />
+			<view class="audio-list" wx:elif="{{tool.targetEp(eps, version, epName).audios.length > 0}}">
 				<view
 				 class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
 				 wx:for="{{tool.targetEp(eps, version, epName).audios}}"

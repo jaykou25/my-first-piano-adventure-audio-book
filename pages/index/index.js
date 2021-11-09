@@ -256,7 +256,10 @@ Page({
     } else if (audio._id) {
       ba.src = audio.src;
     } else {
-      ba.src = audio.src.replace('https://pianoadventures.cn/', 'https://www.ttnote.cn/' );
+      ba.src = audio.src.replace(
+        "https://pianoadventures.cn/",
+        "https://www.ttnote.cn/"
+      );
     }
 
     ba.startTime = startTime;
