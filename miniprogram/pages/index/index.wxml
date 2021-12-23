@@ -2,14 +2,12 @@
 <wxs src="./index.wxs" module="tool" />
 <view class="container">
 
-	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}">
-		<view class='header'>{{tool.targetEp(eps, version, epName).name}}</view>
-		<block wx:if="{{contentLoading}}">
-			<mp-loading type='circle' animated />
-		</block>
-		<block wx:else>
-			<view wx:if="{{!epName || !tool.targetEp(eps, version, epName).audios}}" />
-			<view class="audio-list" wx:elif="{{tool.targetEp(eps, version, epName).audios.length > 0}}">
+	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}" bindscrolltolower="handleToLower">
+		<view class='header'>{{epName}}</view>
+
+		<block>
+			<!-- <view wx:if="{{!epName || !tool.targetEp(eps, version, epName).audios}}" /> -->
+			<view class="audio-list" wx:if="{{targetAudios && targetAudios.length > 0}}">
 				<view
 				 class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
 				 wx:for="{{tool.targetEp(eps, version, epName).audios}}"
@@ -25,25 +23,38 @@
 				</view>
 			</view>
 
-			<view wx:else class="info">
+			<!-- <view wx:elif="{{!!targetEp.audios}}" class="info">
 				<text>无内容</text>
-			</view>
+			</view> -->
 
-			<view class="info" wx:if="{{tool.targetEp(eps, version, epName).version}}">
-				<view>
-					<text>本页面素材来自菲伯尔钢琴官网</text>
-				</view>
-				<view>
-					https://pianoadventures.cn
-				</view>
-			</view>
-
-			<view class="info" wx:if="{{tool.targetEp(eps, version, epName)._id}}">
-				<view>
-					<text>本页面素材来自教材CD</text>
-				</view>
-			</view>
 		</block>
+
+		<block wx:if="{{contentLoading}}">
+			<mp-loading type='circle' animated />
+		</block>
+
+		<block wx:if="{{ !contentLoading && !hasMore}}">
+			<view class='info'>没有更多</view>
+		</block>
+
+		<block wx:if="{{!contentLoading && isEmpty}}">
+			<view class='info'>无内容</view>
+		</block>
+
+		<view class="info" wx:if="{{tool.targetEp(eps, version, epName).version}}">
+			<view>
+				<text>本页面素材来自菲伯尔钢琴官网</text>
+			</view>
+			<view>
+				https://pianoadventures.cn
+			</view>
+		</view>
+
+		<view class="info" wx:if="{{tool.targetEp(eps, version, epName)._id}}">
+			<view>
+				<text>本页面素材来自教材CD</text>
+			</view>
+		</view>
 
 		<view class="footer" />
 
