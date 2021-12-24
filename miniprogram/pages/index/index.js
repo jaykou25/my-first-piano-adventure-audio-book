@@ -60,7 +60,6 @@ Component({
       const target = eps[version].find((ep) => {
         return ep.name === epName;
       });
-      console.log("target", target);
       return target || {};
     },
     targetAudios(data) {
