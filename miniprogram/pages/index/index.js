@@ -434,7 +434,7 @@ Component({
         .then((res) => {
           const ep = myEps.cn.find(($ep) => $ep._id === epId);
           ep.audios = (ep.audios || []).concat(res.result.data);
-          this.setData({ total: res.result.total, current });
+          this.setData({ total: res.result.total, current, update: this.data.update + 1 });
         })
         .finally(() => {
           this.setData({ contentLoading: false });
