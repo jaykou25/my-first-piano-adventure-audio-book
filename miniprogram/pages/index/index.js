@@ -96,7 +96,8 @@ Component({
     },
     onLoad() {
       const defaultEpName = wx.getStorageSync("epName") || "我的钢琴第一课·A级";
-      const defaultEpId = wx.getStorageSync("epId");
+      const defaultEpId =
+        wx.getStorageSync("epId") || (defaultEpName == "音阶练习" ? "-1" : "");
       const defaultPlayMode = wx.getStorageSync("playMode") || 1;
       const defaultVersion = wx.getStorageSync("version") || "cn";
       const oldEpIds = wx.getStorageSync("oldEpIds");
@@ -310,7 +311,7 @@ Component({
     },
     confirmPick(e) {
       const epName = e.currentTarget.dataset.name;
-      const epId = e.currentTarget.dataset.id;
+      const epId = e.currentTarget.dataset.id || "";
       const notice = e.currentTarget.dataset.notice;
 
       const { oldEpIds } = this.data;
