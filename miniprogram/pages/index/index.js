@@ -290,10 +290,10 @@ Component({
       const { speed, targetEp } = this.data;
       ba.title = audio.title;
 
-      if (audio.epId) {
-        ba.src = "https://www.ttnote.cn" + audio.src;
-      } else if (audio._id) {
+      if (audio.epId == -1) {
         ba.src = audio.src;
+      } else if (audio.epId) {
+        ba.src = "https://www.ttnote.cn" + audio.src;
       } else {
         ba.src = audio.src.replace(
           "https://pianoadventures.cn/",
@@ -406,28 +406,14 @@ Component({
       const version = e.currentTarget.dataset.version;
       this.setData({ visualVersion: version });
     },
-    async queryToneExerciseAudios() {
-      const db = wx.cloud.database();
-      this.setData({ contentLoading: true });
-      try {
-        const res = await db.collection("audios").where({}).limit(100).get();
-        myEps.cn[0].audios = res.data;
-        this.setData({ contentLoading: false });
-      } catch (e) {
-        this.setData({ contentLoading: false });
-      }
-    },
     queryCloudEps(defaultEpId) {
-      const db = wx.cloud.database();
-      db.collection("eps")
-        .where({})
-        .limit(100)
-        .get()
+      wx.cloud
+        .callFunction({
+          name: "queryEps",
+        })
         .then((res) => {
-          myEps.cn = epsCn.concat(res.data);
+          myEps.cn = epsCn.concat(res.result.data);
           this.render();
-
-          this.queryToneExerciseAudios();
 
           if (defaultEpId) this.queryCloudTracks(defaultEpId);
         });
@@ -455,14 +441,11 @@ Component({
     },
     // 用于显示通知小红点
     queryNewEpIds() {
-      const db = wx.cloud.database();
-      db.collection("newEps")
-        .limit(1)
-        .get()
-        .then((res) => {
-          const ids = res.data[0] ? res.data[0].newEpIds : [];
-          this.setData({ newEpIds: ids });
-        });
+      wx.cloud.callFunction({ name: "queryNewEpIds" }).then((res) => {
+        const data = res.result.data;
+        const ids = data[0] ? data[0].newEpIds : [];
+        this.setData({ newEpIds: ids });
+      });
     },
     // 触底后的操作
     handleToLower() {

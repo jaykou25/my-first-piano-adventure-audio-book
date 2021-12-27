@@ -27,11 +27,11 @@
 			<mp-loading type='circle' animated />
 		</block>
 
-		<block wx:if="{{!contentLoading && isEmpty}}">
+		<block wx:elif="{{!contentLoading && isEmpty}}">
 			<view class='info'>无内容</view>
 		</block>
 
-		<block wx:if="{{ !contentLoading && !hasMore}}">
+		<block wx:elif="{{ !contentLoading && !hasMore}}">
 			<view class='info'>没有更多</view>
 		</block>
 
@@ -44,7 +44,7 @@
 			</view>
 		</view>
 
-		<view class="info" wx:if="{{targetEp._id}}">
+		<view class="info" wx:if="{{targetEp._id && targetEp._id != '-1'}}">
 			<view>
 				<text>本页面素材来自教材CD</text>
 			</view>
