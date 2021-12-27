@@ -7,13 +7,15 @@ const ba = wx.getBackgroundAudioManager();
 
 const epsCn = require("./audios");
 const epsEn = require("./audiosEn");
+const myEps = { cn: epsCn, en: epsEn };
+
+console.log("jay", wx.getStorageSync("epName"));
 
 Component({
   behaviors: [behavior],
   data: {
-    eps: { cn: epsCn, en: epsEn },
     version: "cn",
-    visualVersion: "",
+    visualVersion: "cn",
     epName: "",
     epId: "",
     playingTrack: {
@@ -42,10 +44,11 @@ Component({
     showNotice: false,
     oldEpIds: [], // 缓存中的epIds, 用于通知小红点
     newEpIds: [], // 请求到的新epIds, 用于通知小红点
-    contentLoading: false, // 从数据库获取音频内容
+    contentLoading: true, // 从数据库获取音频内容
     current: 1, //当前页数
     limit: 20, // 每页数
     total: 0, // 当前专辑的歌曲总数
+    update: 1,
   },
   isSetSpeed: false,
   nowTime: 0,
@@ -56,18 +59,25 @@ Component({
       return data.total > data.current * data.limit;
     },
     targetEp(data) {
-      const { eps, version, epName } = data;
-      const target = eps[version].find((ep) => {
+      const { version, epName, update } = data;
+      const target = myEps[version].find((ep) => {
         return ep.name === epName;
       });
       return target || {};
     },
     targetAudios(data) {
-      return data.targetEp.audios;
+      const { targetEp } = data;
+      return targetEp.audios || 0;
     },
     isEmpty(data) {
-      const { audios } = data.targetEp;
-      return audios && audios.length < 1;
+      const { targetAudios } = data;
+      return !!targetAudios && targetAudios.length < 1;
+    },
+    versionEps(data) {
+      // update是全局更新的变量, 这里要引入, 否则不会引起重渲染
+      const { visualVersion, update } = data;
+
+      return myEps[visualVersion];
     },
   },
   methods: {
@@ -261,8 +271,10 @@ Component({
     handlePlay(index) {
       this.setData({ loading: true });
 
-      const { epName, playingTrack, version, eps } = this.data;
-      const audio = eps[version].find((ep) => ep.name === epName).audios[index];
+      const { epName, playingTrack, version } = this.data;
+      const audio = myEps[version].find((ep) => ep.name === epName).audios[
+        index
+      ];
 
       // 正在播放的音频点击忽略
       if (index === playingTrack.index && playingTrack.epName === epName)
@@ -275,8 +287,7 @@ Component({
       this.startPlay(audio);
     },
     startPlay(audio, startTime = 0) {
-      const { epName, speed, version, eps } = this.data;
-      const targetEp = eps[version].find((ep) => ep.name === epName);
+      const { speed, targetEp } = this.data;
       ba.title = audio.title;
 
       if (audio.epId) {
@@ -321,9 +332,7 @@ Component({
       wx.setStorageSync("version", this.data.visualVersion);
 
       if (epId) {
-        const eps = this.data.eps;
-        const ep = eps.cn.find(($ep) => $ep._id === epId);
-        if (!ep.audios) {
+        if (!this.data.targetAudios) {
           this.queryCloudTracks(epId);
         }
       }
@@ -377,8 +386,7 @@ Component({
       wx.setStorageSync("playMode", mode + 1);
     },
     playNext() {
-      const { playingTrack, epName, version, eps } = this.data;
-      const targetEp = eps[version].find((ep) => ep.name === epName);
+      const { playingTrack, targetEp } = this.data;
       if (playingTrack.index < targetEp.audios.length - 1) {
         this.handlePlay(playingTrack.index + 1);
       } else {
@@ -387,7 +395,7 @@ Component({
     },
     playPrev() {
       // 当前是第一曲的话就重放
-      const { playingTrack, epName, version, eps } = this.data;
+      const { playingTrack } = this.data;
       if (playingTrack.index === 0) {
         this.refresh();
       } else {
@@ -399,13 +407,12 @@ Component({
       this.setData({ visualVersion: version });
     },
     async queryToneExerciseAudios() {
-      const eps = this.data.eps;
       const db = wx.cloud.database();
       this.setData({ contentLoading: true });
       try {
         const res = await db.collection("audios").where({}).limit(100).get();
-        eps.cn[0].audios = res.data;
-        this.setData({ eps, contentLoading: false });
+        myEps.cn[0].audios = res.data;
+        this.setData({ contentLoading: false });
       } catch (e) {
         this.setData({ contentLoading: false });
       }
@@ -417,7 +424,8 @@ Component({
         .limit(100)
         .get()
         .then((res) => {
-          this.setData({ eps: { cn: epsCn.concat(res.data), en: epsEn } });
+          myEps.cn = epsCn.concat(res.data);
+          this.render();
 
           this.queryToneExerciseAudios();
 
@@ -426,7 +434,6 @@ Component({
     },
     queryCloudTracks(epId, current = 1) {
       this.setData({ contentLoading: true });
-      const eps = this.data.eps;
 
       wx.cloud
         .callFunction({
@@ -438,9 +445,9 @@ Component({
           },
         })
         .then((res) => {
-          const ep = eps.cn.find(($ep) => $ep._id === epId);
+          const ep = myEps.cn.find(($ep) => $ep._id === epId);
           ep.audios = (ep.audios || []).concat(res.result.data);
-          this.setData({ eps, total: res.result.total, current });
+          this.setData({ total: res.result.total, current });
         })
         .finally(() => {
           this.setData({ contentLoading: false });
@@ -464,6 +471,9 @@ Component({
       if (!contentLoading && hasMore) {
         this.queryCloudTracks(epId, current + 1);
       }
+    },
+    render() {
+      this.setData({ update: this.data.update + 1 });
     },
   },
 });
