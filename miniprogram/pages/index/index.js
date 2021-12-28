@@ -408,12 +408,13 @@ Component({
       this.setData({ visualVersion: version });
     },
     queryCloudEps(defaultEpId) {
-      wx.cloud
-        .callFunction({
-          name: "queryEps",
-        })
+      const db = wx.cloud.database();
+      db.collection("eps")
+        .limit(100)
+        .get()
+
         .then((res) => {
-          myEps.cn = epsCn.concat(res.result.data);
+          myEps.cn = epsCn.concat(res.data);
           this.render();
 
           if (defaultEpId) this.queryCloudTracks(defaultEpId);
@@ -434,7 +435,11 @@ Component({
         .then((res) => {
           const ep = myEps.cn.find(($ep) => $ep._id === epId);
           ep.audios = (ep.audios || []).concat(res.result.data);
-          this.setData({ total: res.result.total, current, update: this.data.update + 1 });
+          this.setData({
+            total: res.result.total,
+            current,
+            update: this.data.update + 1,
+          });
         })
         .finally(() => {
           this.setData({ contentLoading: false });
@@ -442,11 +447,15 @@ Component({
     },
     // 用于显示通知小红点
     queryNewEpIds() {
-      wx.cloud.callFunction({ name: "queryNewEpIds" }).then((res) => {
-        const data = res.result.data;
-        const ids = data[0] ? data[0].newEpIds : [];
-        this.setData({ newEpIds: ids });
-      });
+      const db = wx.cloud.database();
+      db.collection("newEps")
+        .limit(1)
+        .get()
+        .then((res) => {
+          const data = res.data;
+          const ids = data[0] ? data[0].newEpIds : [];
+          this.setData({ newEpIds: ids });
+        });
     },
     // 触底后的操作
     handleToLower() {
