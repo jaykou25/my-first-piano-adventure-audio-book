@@ -44,10 +44,8 @@ Component({
     showNotice: false,
     oldEpIds: [], // 缓存中的epIds, 用于通知小红点
     newEpIds: [], // 请求到的新epIds, 用于通知小红点
-    contentLoading: true, // 从数据库获取音频内容
-    current: 1, //当前页数
+    contentLoading: false, // 从数据库获取音频内容
     limit: 20, // 每页数
-    total: 0, // 当前专辑的歌曲总数
     update: 1,
   },
   isSetSpeed: false,
@@ -55,9 +53,6 @@ Component({
   shouldPause: false,
   stopSlider: false,
   computed: {
-    hasMore(data) {
-      return data.total > data.current * data.limit;
-    },
     targetEp(data) {
       const { version, epName, update } = data;
       const target = myEps[version].find((ep) => {
@@ -78,6 +73,12 @@ Component({
       const { visualVersion, update } = data;
 
       return myEps[visualVersion];
+    },
+    hasMore(data) {
+      const { limit, targetEp } = data;
+      const { current = 1, total = 0 } = targetEp;
+
+      return total > current * limit;
     },
   },
   methods: {
@@ -435,9 +436,10 @@ Component({
         .then((res) => {
           const ep = myEps.cn.find(($ep) => $ep._id === epId);
           ep.audios = (ep.audios || []).concat(res.result.data);
+          ep.total = res.result.total;
+          ep.current = current;
+
           this.setData({
-            total: res.result.total,
-            current,
             update: this.data.update + 1,
           });
         })
@@ -459,9 +461,10 @@ Component({
     },
     // 触底后的操作
     handleToLower() {
-      const { total, current, limit, contentLoading, epId } = this.data;
-      const hasMore = total > current * limit;
-      if (!contentLoading && hasMore) {
+      const { hasMore, targetEp, contentLoading, epId } = this.data;
+      const { current = 1 } = targetEp;
+
+      if (epId && !contentLoading && hasMore) {
         this.queryCloudTracks(epId, current + 1);
       }
     },
