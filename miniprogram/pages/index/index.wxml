@@ -54,7 +54,7 @@
 
 	</scroll-view>
 
-	<view class="bottom-area">
+	<view class="bottom-area" wx:if="{{!hideAudio}}">
 		<!-- 菜单按钮 -->
 		<view class="icon-wrapper iconMenu {{tool.menuShowNotice(oldEpIds, newEpIds) ? 'iconMenuHasNew' : ''}}" hover-class="iconMenuHover" bindtap='toPickerShow'>
 			<i class="ri-menu-fill ri-lg" style="font-size: 1.3em" />

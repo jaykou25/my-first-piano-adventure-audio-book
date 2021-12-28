@@ -47,6 +47,7 @@ Component({
     contentLoading: false, // 从数据库获取音频内容
     limit: 20, // 每页数
     update: 1,
+    hideAudio: false,
   },
   isSetSpeed: false,
   nowTime: 0,
@@ -98,7 +99,7 @@ Component({
     onLoad() {
       const defaultEpName = wx.getStorageSync("epName") || "我的钢琴第一课·A级";
       const defaultEpId =
-        wx.getStorageSync("epId") || (defaultEpName == "音阶练习" ? "-1" : "");
+        wx.getStorageSync("epId") || (defaultEpName == "音阶练习" ? "-1" : ""); //为了兼容之前音阶练习没有epId
       const defaultPlayMode = wx.getStorageSync("playMode") || 1;
       const defaultVersion = wx.getStorageSync("version") || "cn";
       const oldEpIds = wx.getStorageSync("oldEpIds");
@@ -267,6 +268,8 @@ Component({
       this.stopSlider = true;
     },
     handleAudioClick(e) {
+      if (this.data.hideAudio) return;
+
       const index = e.currentTarget.dataset.index;
       this.handlePlay(index);
     },
@@ -456,7 +459,8 @@ Component({
         .then((res) => {
           const data = res.data;
           const ids = data[0] ? data[0].newEpIds : [];
-          this.setData({ newEpIds: ids });
+          const hideAudio = data[0] ? data[0].hideAudio : false;
+          this.setData({ newEpIds: ids, hideAudio });
         });
     },
     // 触底后的操作
