@@ -8,12 +8,19 @@ cloud.init({
 // 云函数入口函数
 exports.main = async (event, context) => {
   const db = cloud.database();
-  const { epId } = event;
+  const { epId, current = 1, limit = 20 } = event;
+  const countResult = await db
+    .collection("tracks")
+    .where({ epId: epId })
+    .count();
+  const total = countResult.total;
+
   const res = await db
     .collection("tracks")
     .where({ epId: epId })
     .orderBy("sort", "asc")
-    .limit(200)
+    .limit(20)
+    .skip((current - 1) * limit)
     .get();
-  return res;
+  return { data: res.data, total: total };
 };

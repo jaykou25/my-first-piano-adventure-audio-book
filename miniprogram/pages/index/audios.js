@@ -11,7 +11,7 @@ module.exports = [
   {
     name: "音阶练习",
     img: "/pages/index/tone.png",
-    audios: [],
+    _id: "-1",
   },
   {
     name: "我的钢琴第一课·A级",

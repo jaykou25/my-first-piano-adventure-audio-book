@@ -2,54 +2,59 @@
 <wxs src="./index.wxs" module="tool" />
 <view class="container">
 
-	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}">
-		<view class='header'>{{tool.targetEp(eps, version, epName).name}}</view>
-		<block wx:if="{{contentLoading}}">
-			<mp-loading type='circle' animated />
-		</block>
-		<block wx:else>
-			<view wx:if="{{!epName || !tool.targetEp(eps, version, epName).audios}}" />
-			<view class="audio-list" wx:elif="{{tool.targetEp(eps, version, epName).audios.length > 0}}">
+	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}" bindscrolltolower="handleToLower">
+		<view class='header'>{{epName}}</view>
+
+		<block wx:if="{{targetAudios && targetAudios.length > 0}}">
+			<view class="audio-list">
 				<view
 				 class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
-				 wx:for="{{tool.targetEp(eps, version, epName).audios}}"
+				 wx:for="{{targetAudios}}"
 				 wx:key="index"
 				 bindtap="handleAudioClick"
 				 data-index="{{index}}"
 				 data-audio="{{item}}"
 				>
-					<image class="audioImg" src="{{tool.targetEp(eps, version, epName).img}}" />
+					<image class="audioImg" src="{{targetEp.img}}" />
 					<view class="audioIndex">{{tool.pad(index + 1)}}</view>
 					<view class="audioTitle">{{item.title}}</view>
 					<view class="audioLength">{{item.length}}</view>
 				</view>
 			</view>
-
-			<view wx:else class="info">
-				<text>无内容</text>
-			</view>
-
-			<view class="info" wx:if="{{tool.targetEp(eps, version, epName).version}}">
-				<view>
-					<text>本页面素材来自菲伯尔钢琴官网</text>
-				</view>
-				<view>
-					https://pianoadventures.cn
-				</view>
-			</view>
-
-			<view class="info" wx:if="{{tool.targetEp(eps, version, epName)._id}}">
-				<view>
-					<text>本页面素材来自教材CD</text>
-				</view>
-			</view>
 		</block>
+
+		<block wx:if="{{contentLoading}}">
+			<mp-loading type='circle' animated />
+		</block>
+
+		<block wx:elif="{{!contentLoading && isEmpty}}">
+			<view class='info'>无内容</view>
+		</block>
+
+		<block wx:elif="{{ !contentLoading && !hasMore}}">
+			<view class='info'>没有更多</view>
+		</block>
+
+		<view class="info" wx:if="{{targetEp.version}}">
+			<view>
+				<text>本页面素材来自菲伯尔钢琴官网</text>
+			</view>
+			<view>
+				https://pianoadventures.cn
+			</view>
+		</view>
+
+		<view class="info" wx:if="{{targetEp._id && targetEp._id != '-1'}}">
+			<view>
+				<text>本页面素材来自教材CD</text>
+			</view>
+		</view>
 
 		<view class="footer" />
 
 	</scroll-view>
 
-	<view class="bottom-area">
+	<view class="bottom-area" wx:if="{{!hideAudio}}">
 		<!-- 菜单按钮 -->
 		<view class="icon-wrapper iconMenu {{tool.menuShowNotice(oldEpIds, newEpIds) ? 'iconMenuHasNew' : ''}}" hover-class="iconMenuHover" bindtap='toPickerShow'>
 			<i class="ri-menu-fill ri-lg" style="font-size: 1.3em" />
@@ -57,7 +62,7 @@
 
 		<!-- 正在播放 -->
 		<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active playingAudio">
-			<image class="audioImg" src="{{tool.targetEp(eps, version, playingTrack.epName).img}}" />
+			<image class="audioImg" src="{{targetEp.img}}" />
 			<view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
 			<view class="audioTitle">{{playingTrack.title}}</view>
 			<view class='icon-wrapper iconClose' bindtap='closePlaying'>
@@ -169,7 +174,7 @@
 
 			<mycheckboxgroup prop="radio" multi="{{false}}" ext-class="checkboxGroup">
 				<mycheckbox
-				 wx:for="{{tool.versionEps(eps, visualVersion)}}"
+				 wx:for="{{versionEps}}"
 				 wx:key="index"
 				 multi="{{false}}"
 				 data-id="{{item._id}}"
