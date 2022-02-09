@@ -45,7 +45,7 @@ Component({
     oldEpIds: [], // 缓存中的epIds, 用于通知小红点
     newEpIds: [], // 请求到的新epIds, 用于通知小红点
     contentLoading: false, // 从数据库获取音频内容
-    limit: 20, // 每页数
+    limit: 30, // 每页数
     update: 1,
     hideAudio: false,
   },
@@ -433,7 +433,7 @@ Component({
           data: {
             epId,
             current,
-            limit: this.limit,
+            limit: this.data.limit,
           },
         })
         .then((res) => {

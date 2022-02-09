@@ -185,7 +185,7 @@
 				>
 					<view slot='label' class='pickerRow'>
 						<view class="pickerImg {{(tool.epShowNotice(item._id, oldEpIds, newEpIds)) ? 'pickerImgHasNew' : ''}}">
-							<image style="flex: none; width: 48px; height: 48px;" src="{{item.img}}" />
+							<image style="flex: none; width: 48px; height: 48px; border-radius: 5px;" src="{{item.img}}" />
 						</view>
 						<view>
 							{{item.name}}

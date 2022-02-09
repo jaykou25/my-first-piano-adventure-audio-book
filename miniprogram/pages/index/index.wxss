@@ -80,6 +80,7 @@
   width: 42px;
   height: 42px;
   margin-right: 30rpx;
+  border-radius: 5px;
 }
 
 .audioIndex {
