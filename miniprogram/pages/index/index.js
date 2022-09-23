@@ -412,56 +412,48 @@ Component({
       this.setData({ visualVersion: version });
     },
     queryCloudEps(defaultEpId) {
-      const db = wx.cloud.database();
-      db.collection("eps")
-        .limit(100)
-        .get()
-
-        .then((res) => {
+      wx.request({
+        url: "https://audio-book-api.ttnote.cn/eps",
+        success: (res) => {
           myEps.cn = epsCn.concat(res.data);
           this.render();
 
           if (defaultEpId) this.queryCloudTracks(defaultEpId);
-        });
+        },
+      });
     },
     queryCloudTracks(epId, current = 1) {
       this.setData({ contentLoading: true });
 
-      wx.cloud
-        .callFunction({
-          name: "queryTracksByPage",
-          data: {
-            epId,
-            current,
-            limit: this.data.limit,
-          },
-        })
-        .then((res) => {
+      wx.request({
+        url: `https://audio-book-api.ttnote.cn/tracks/${epId}`,
+        data: { current, limit: this.data.limit },
+        success: (res) => {
           const ep = myEps.cn.find(($ep) => $ep._id === epId);
-          ep.audios = (ep.audios || []).concat(res.result.data);
-          ep.total = res.result.total;
+          ep.audios = (ep.audios || []).concat(res.data.rows);
+          ep.total = res.data.count;
           ep.current = current;
 
           this.setData({
             update: this.data.update + 1,
           });
-        })
-        .finally(() => {
+        },
+        complete: () => {
           this.setData({ contentLoading: false });
-        });
+        },
+      });
     },
     // 用于显示通知小红点
     queryNewEpIds() {
-      const db = wx.cloud.database();
-      db.collection("newEps")
-        .limit(1)
-        .get()
-        .then((res) => {
+      wx.request({
+        url: "https://audio-book-api.ttnote.cn/newEps",
+        success: (res) => {
           const data = res.data;
-          const ids = data[0] ? data[0].newEpIds : [];
+          const ids = data[0] ? data[0].newEpIds.split(",") : [];
           const hideAudio = data[0] ? data[0].hideAudio : false;
           this.setData({ newEpIds: ids, hideAudio });
-        });
+        },
+      });
     },
     // 触底后的操作
     handleToLower() {
