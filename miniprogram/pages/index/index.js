@@ -96,7 +96,7 @@ Component({
         imageUrl: "/pages/index/levelA800.png",
       };
     },
-    onLoad() {
+    onLoad(options) {
       const defaultEpName = wx.getStorageSync("epName") || "我的钢琴第一课·A级";
       const defaultEpId =
         wx.getStorageSync("epId") || (defaultEpName == "音阶练习" ? "-1" : ""); //为了兼容之前音阶练习没有epId
@@ -418,7 +418,18 @@ Component({
           myEps.cn = epsCn.concat(res.data);
           this.render();
 
-          if (defaultEpId) this.queryCloudTracks(defaultEpId);
+          if (defaultEpId) {
+            /**
+             * 2022/9/28
+             * bugfix: 小程序在后台时, 通过点击该小程序的分享链接唤起小程序后会再次执行onLoad
+             * 导制重复请求数据
+             * https://developers.weixin.qq.com/community/develop/doc/0002861714003808b99e1412b5b400?fromCreate=0
+             */
+            const ep = myEps.cn.find(($ep) => $ep._id === defaultEpId);
+            if ((ep.audios || []).length < 1) {
+              this.queryCloudTracks(defaultEpId);
+            }
+          }
         },
       });
     },
@@ -450,7 +461,7 @@ Component({
         success: (res) => {
           const data = res.data;
           const ids = data[0] ? data[0].newEpIds.split(",") : [];
-          const hideAudio = data[0] ? data[0].hideAudio : false;
+          const hideAudio = data[1] ? data[1].hideAudio : false;
           this.setData({ newEpIds: ids, hideAudio });
         },
       });
