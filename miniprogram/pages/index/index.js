@@ -85,14 +85,14 @@ Component({
   methods: {
     onShareAppMessage() {
       return {
-        title: "我的钢琴第一课音频素材",
+        title: "菲伯尔钢琴音频素材",
         path: "/pages/index/index",
         imageUrl: "/pages/index/levelA800.png",
       };
     },
     onShareTimeline() {
       return {
-        title: "我的钢琴第一课音频素材",
+        title: "菲伯尔钢琴音频素材",
         imageUrl: "/pages/index/levelA800.png",
       };
     },
@@ -103,6 +103,10 @@ Component({
       const defaultPlayMode = wx.getStorageSync("playMode") || 1;
       const defaultVersion = wx.getStorageSync("version") || "cn";
       const oldEpIds = wx.getStorageSync("oldEpIds");
+
+      wx.setNavigationBarTitle({
+        title: defaultEpName,
+      });
 
       this.setData({
         epName: defaultEpName,
@@ -336,6 +340,10 @@ Component({
       wx.setStorageSync("epId", epId);
       wx.setStorageSync("version", this.data.visualVersion);
 
+      wx.setNavigationBarTitle({
+        title: epName,
+      });
+
       if (epId) {
         if (!this.data.targetAudios) {
           this.queryCloudTracks(epId);
@@ -461,7 +469,7 @@ Component({
         success: (res) => {
           const data = res.data;
           const ids = data[0] ? data[0].newEpIds.split(",") : [];
-          const hideAudio = data[1] ? data[1].hideAudio : false;
+          const hideAudio = data[0] ? data[0].hideAudio : false;
           this.setData({ newEpIds: ids, hideAudio });
         },
       });

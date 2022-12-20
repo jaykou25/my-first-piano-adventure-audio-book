@@ -1,7 +1,8 @@
 <checkbox-group class="{{extClass}}" wx-if="{{multi}}" bindchange="checkedChange">
-	<slot/>
+		<slot />
 </checkbox-group>
-<radio-group class="{{extClass}}" wx-else bindchange="checkedChange">
-	<slot/>
-</radio-group>
-
+<scroll-view scroll-y="{{true}}" style="height: 250px">
+		<radio-group class="{{extClass}}" wx-else bindchange="checkedChange">
+				<slot />
+		</radio-group>
+</scroll-view>

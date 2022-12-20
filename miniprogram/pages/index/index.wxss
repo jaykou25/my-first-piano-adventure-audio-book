@@ -287,6 +287,10 @@
     calc(env(safe-area-inset-left));
 }
 
+.chooseClassTitle {
+  overflow: scroll;
+}
+
 .picker.eps .weui-half-screen-dialog__hd {
   display: block;
   position: absolute;
@@ -361,8 +365,8 @@
 }
 
 .checkboxGroup {
-  height: 250px;
-  overflow: auto;
+  /* height: 250px; */
+  /* overflow: auto; */
 }
 
 .audioProgressRow {
