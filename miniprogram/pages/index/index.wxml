@@ -1,232 +1,251 @@
 <!--index.wxml-->
 <wxs src="./index.wxs" module="tool" />
 <view class="container">
+  <scroll-view
+    class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}"
+    scroll-y="{{true}}"
+    bindscrolltolower="handleToLower"
+  >
+    <view class="header">{{epName}}</view>
 
-	<scroll-view class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}" scroll-y="{{true}}" bindscrolltolower="handleToLower">
-		<view class='header'>{{epName}}</view>
+    <block wx:if="{{targetAudios && targetAudios.length > 0}}">
+      <view class="audio-list">
+        <view
+          class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
+          wx:for="{{targetAudios}}"
+          wx:key="index"
+          bindtap="handleAudioClick"
+          data-index="{{index}}"
+          data-audio="{{item}}"
+        >
+          <image class="audioImg" src="{{targetEp.img}}" />
+          <view class="audioIndex">{{tool.pad(index + 1)}}</view>
+          <view class="audioTitle">{{item.title}}</view>
+          <view class="audioLength">{{item.length}}</view>
+        </view>
+      </view>
+    </block>
 
-		<block wx:if="{{targetAudios && targetAudios.length > 0}}">
-			<view class="audio-list">
-				<view
-				 class="audio-item {{tool.isActive(index, playingTrack, epName) ? 'active' : ''}}"
-				 wx:for="{{targetAudios}}"
-				 wx:key="index"
-				 bindtap="handleAudioClick"
-				 data-index="{{index}}"
-				 data-audio="{{item}}"
-				>
-					<image class="audioImg" src="{{targetEp.img}}" />
-					<view class="audioIndex">{{tool.pad(index + 1)}}</view>
-					<view class="audioTitle">{{item.title}}</view>
-					<view class="audioLength">{{item.length}}</view>
-				</view>
-			</view>
-		</block>
+    <block wx:if="{{contentLoading}}">
+      <mp-loading type="circle" animated />
+    </block>
 
-		<block wx:if="{{contentLoading}}">
-			<mp-loading type='circle' animated />
-		</block>
+    <block wx:elif="{{!contentLoading && isEmpty}}">
+      <view class="info">无内容</view>
+    </block>
 
-		<block wx:elif="{{!contentLoading && isEmpty}}">
-			<view class='info'>无内容</view>
-		</block>
+    <block wx:elif="{{ !contentLoading && !hasMore}}">
+      <view class="info">没有更多</view>
+    </block>
 
-		<block wx:elif="{{ !contentLoading && !hasMore}}">
-			<view class='info'>没有更多</view>
-		</block>
+    <view class="info" wx:if="{{targetEp.version}}">
+      <view>
+        <text>本页面素材来自菲伯尔钢琴官网</text>
+      </view>
+      <view>
+        https://pianoadventures.cn
+      </view>
+    </view>
 
-		<view class="info" wx:if="{{targetEp.version}}">
-			<view>
-				<text>本页面素材来自菲伯尔钢琴官网</text>
-			</view>
-			<view>
-				https://pianoadventures.cn
-			</view>
-		</view>
+    <view class="info" wx:if="{{targetEp._id && targetEp._id != '-1'}}">
+      <view>
+        <text>本页面素材来自教材CD</text>
+      </view>
+    </view>
 
-		<view class="info" wx:if="{{targetEp._id && targetEp._id != '-1'}}">
-			<view>
-				<text>本页面素材来自教材CD</text>
-			</view>
-		</view>
+    <view class="footer" />
+  </scroll-view>
 
-		<view class="footer" />
+  <view class="bottom-area" wx:if="{{!hideAudio}}">
+    <!-- 菜单按钮 -->
+    <view
+      class="icon-wrapper iconMenu {{tool.menuShowNotice(oldEpIds, newEpIds) ? 'iconMenuHasNew' : ''}}"
+      hover-class="iconMenuHover"
+      bindtap="toPickerShow"
+    >
+      <i class="ri-menu-fill ri-lg" style="font-size: 1.3em" />
+    </view>
 
-	</scroll-view>
+    <!-- 正在播放 -->
+    <view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active playingAudio">
+      <image class="audioImg" src="{{targetEp.img}}" />
+      <view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
+      <view class="audioTitle">{{playingTrack.title}}</view>
+      <view class="icon-wrapper iconClose" bindtap="closePlaying">
+        <i class="ri-close-fill ri-lg" />
+      </view>
+      <text wx:if="{{waiting || loading}}" class="audioLoading">加载中...</text>
+    </view>
 
-	<view class="bottom-area" wx:if="{{!hideAudio}}">
-		<!-- 菜单按钮 -->
-		<view class="icon-wrapper iconMenu {{tool.menuShowNotice(oldEpIds, newEpIds) ? 'iconMenuHasNew' : ''}}" hover-class="iconMenuHover" bindtap='toPickerShow'>
-			<i class="ri-menu-fill ri-lg" style="font-size: 1.3em" />
-		</view>
+    <!-- 播放进度条与速度 -->
+    <view wx:if="{{tool.isPlaying(playingTrack)}}" class="audioProgressRow">
+      <view class="audioProgress">
+        <slider
+          block-size="16"
+          value="{{percent}}"
+          bindchange="seekAudio"
+          bindchanging="handleBindChanging"
+        />
+        <view class="audioProgressText">
+          <text>{{tool.toSongTime(currentTime)}}</text>
+          <text>{{tool.toSongTime(duration)}}</text>
+        </view>
+      </view>
+      <!-- 播放速度 -->
+      <view class="audioSpeed" bindtap="toSpeedShow">
+        <text wx:if="{{!speed }}">倍速</text>
+        <view wx:else class="speedLabel">
+          <view style="margin-right: 2px">{{speedIcon}}</view>
+          <view>{{speedLabel}}</view>
+        </view>
+      </view>
+    </view>
 
-		<!-- 正在播放 -->
-		<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audio-item active playingAudio">
-			<image class="audioImg" src="{{targetEp.img}}" />
-			<view class="audioIndex">{{tool.pad(playingTrack.index + 1)}}</view>
-			<view class="audioTitle">{{playingTrack.title}}</view>
-			<view class='icon-wrapper iconClose' bindtap='closePlaying'>
-				<i class="ri-close-fill ri-lg" />
-			</view>
-			<text wx:if="{{waiting || loading}}" class="audioLoading">加载中...</text>
-		</view>
+    <!-- 控制区域 -->
+    <view class="play-area-content">
+      <!-- 正常模式 -->
+      <view
+        wx:if="{{playMode === 1}}"
+        hover-class="icon-hover"
+        class="icon-wrapper iconMode iconModeNormal iconTip"
+        bindtap="togglePlayMode"
+      >
+        <i class="ri-repeat-2-fill ri-lg" />
+      </view>
 
-		<!-- 播放进度条与速度 -->
-		<view wx:if="{{tool.isPlaying(playingTrack)}}" class="audioProgressRow">
-			<view class="audioProgress">
-				<slider
-				 block-size="16"
-				 value="{{percent}}"
-				 bindchange="seekAudio"
-				 bindchanging="handleBindChanging"
-				/>
-				<view class="audioProgressText">
-					<text>{{tool.toSongTime(currentTime)}}</text>
-					<text>{{tool.toSongTime(duration)}}</text>
-				</view>
-			</view>
-			<!-- 播放速度 -->
-			<view class="audioSpeed" bindtap="toSpeedShow">
-				<text wx:if="{{!speed }}">倍速</text>
-				<view wx:else class='speedLabel'>
-					<view style="margin-right: 2px">{{speedIcon}}</view>
-					<view>{{speedLabel}}</view>
-				</view>
-			</view>
-		</view>
+      <!-- 单曲循环 -->
+      <view
+        wx:if="{{playMode === 2}}"
+        hover-class="icon-hover"
+        class="icon-wrapper iconMode iconModeRepeat iconTip"
+        bindtap="togglePlayMode"
+      >
+        <i class="ri-repeat-one-fill ri-lg" />
+      </view>
 
-		<!-- 控制区域 -->
-		<view class="play-area-content">
+      <!-- 顺序播放 -->
+      <view
+        wx:if="{{playMode === 3}}"
+        hover-class="icon-hover"
+        class="icon-wrapper iconMode iconModeOrder iconTip"
+        bindtap="togglePlayMode"
+      >
+        <i class="ri-order-play-fill ri-lg" />
+      </view>
 
-			<!-- 正常模式 -->
-			<view
-			 wx:if="{{playMode === 1}}"
-			 hover-class="icon-hover"
-			 class='icon-wrapper iconMode iconModeNormal iconTip'
-			 bindtap="togglePlayMode"
-			>
-				<i class="ri-repeat-2-fill ri-lg" />
-			</view>
+      <!-- 回退 -->
+      <view hover-class="icon-hover" class="icon-wrapper iconBack iconTip" bindtap="playBack">
+        <i class="ri-rewind-fill ri-lg" />
+      </view>
 
-			<!-- 单曲循环 -->
-			<view
-			 wx:if="{{playMode === 2}}"
-			 hover-class="icon-hover"
-			 class='icon-wrapper iconMode iconModeRepeat iconTip'
-			 bindtap="togglePlayMode"
-			>
-				<i class="ri-repeat-one-fill ri-lg" />
-			</view>
+      <!-- 暂停 -->
+      <view
+        wx:if="{{audioStatus === 2}}"
+        class="icon-wrapper icon-wrapper-large"
+        hover-class="icon-hover"
+        bindtap="pause"
+      >
+        <i class="ri-pause-mini-fill ri-3x iconPause" />
+      </view>
 
-			<!-- 顺序播放 -->
-			<view
-			 wx:if="{{playMode === 3}}"
-			 hover-class="icon-hover"
-			 class='icon-wrapper iconMode iconModeOrder iconTip'
-			 bindtap="togglePlayMode"
-			>
-				<i class="ri-order-play-fill ri-lg" />
-			</view>
+      <!-- 播放 -->
+      <view
+        wx:else
+        class="icon-wrapper icon-wrapper-large "
+        hover-class="icon-hover"
+        bindtap="play"
+      >
+        <i class="ri-play-fill ri-3x" />
+      </view>
 
-			<!-- 回退 -->
-			<view hover-class="icon-hover" class='icon-wrapper iconBack iconTip' bindtap="playBack">
-				<i class="ri-rewind-fill ri-lg" />
-			</view>
+      <!-- 快进 -->
+      <view hover-class="icon-hover" class="icon-wrapper iconForward iconTip" bindtap="playForward">
+        <i class="ri-speed-fill ri-lg" />
+      </view>
 
-			<!-- 暂停 -->
-			<view
-			 wx:if="{{audioStatus === 2}}"
-			 class='icon-wrapper icon-wrapper-large'
-			 hover-class="icon-hover"
-			 bindtap="pause"
-			>
-				<i class="ri-pause-mini-fill ri-3x iconPause" />
-			</view>
+      <!-- 重新播放 -->
+      <view
+        hover-class="icon-hover-rotate"
+        class="icon-wrapper iconRestart iconTip"
+        bindtap="refresh"
+      >
+        <i class="ri-restart-fill ri-2x" />
+      </view>
+    </view>
+  </view>
 
-			<!-- 播放 -->
-			<view
-			 wx:else
-			 class='icon-wrapper icon-wrapper-large '
-			 hover-class="icon-hover"
-			 bindtap="play"
-			>
-				<i class="ri-play-fill ri-3x" />
-			</view>
+  <mp-half-screen-dialog extClass="picker eps" show="{{pickerShow}}" closabled="{{false}}">
+    <view class="versionTabs" slot="title">
+      <text
+        class="tab {{visualVersion === 'cn' ? 'tabActive' : ''}}"
+        style="margin-right: 20px;"
+        bindtap="toggleVersion"
+        data-version="cn"
+        >中文版本</text
+      >
+      <text
+        class="tab {{visualVersion === 'en' ? 'tabActive' : ''}}"
+        bindtap="toggleVersion"
+        data-version="en"
+        >英文版本</text
+      >
+    </view>
+    <mp-cells title="选择课程" slot="desc" ext-class="chooseClassTitle">
+      <mycheckboxgroup prop="radio" multi="{{false}}" ext-class="checkboxGroup">
+        <mycheckbox
+          wx:for="{{versionEps}}"
+          wx:key="index"
+          multi="{{false}}"
+          data-id="{{item._id}}"
+          data-name="{{item.name}}"
+          data-notice="{{tool.epShowNotice(item._id, oldEpIds, newEpIds)}}"
+          checked="{{item.name === epName && version === visualVersion}}"
+          bindchange="confirmPick"
+        >
+          <view slot="label" class="pickerRow">
+            <view
+              class="pickerImg {{(tool.epShowNotice(item._id, oldEpIds, newEpIds)) ? 'pickerImgHasNew' : ''}}"
+            >
+              <image
+                style="flex: none; width: 48px; height: 48px; border-radius: 5px;"
+                src="{{item.img}}"
+              />
+            </view>
+            <view>
+              {{item.name}}
+            </view>
+          </view>
+        </mycheckbox>
+      </mycheckboxgroup>
+    </mp-cells>
+  </mp-half-screen-dialog>
 
-			<!-- 快进 -->
-			<view hover-class="icon-hover" class='icon-wrapper iconForward iconTip' bindtap="playForward">
-				<i class="ri-speed-fill ri-lg" />
-			</view>
-
-			<!-- 重新播放 -->
-			<view hover-class="icon-hover-rotate" class='icon-wrapper iconRestart iconTip' bindtap="refresh">
-				<i class="ri-restart-fill ri-2x" />
-			</view>
-		</view>
-	</view>
-
-	<mp-half-screen-dialog extClass='picker eps' show="{{pickerShow}}" closabled="{{false}}">
-		<view class='versionTabs' slot='title'>
-			<text class="tab {{visualVersion === 'cn' ? 'tabActive' : ''}}" style="margin-right: 20px;" bindtap="toggleVersion" data-version="cn" >中文版本</text>
-			<text class="tab {{visualVersion === 'en' ? 'tabActive' : ''}}" bindtap="toggleVersion" data-version='en' >英文版本</text>
-		</view>
-		<mp-cells title="选择课程" slot="desc" ext-class='chooseClassTitle'>
-
-			<mycheckboxgroup prop="radio" multi="{{false}}" ext-class="checkboxGroup">
-				<mycheckbox
-				 wx:for="{{versionEps}}"
-				 wx:key="index"
-				 multi="{{false}}"
-				 data-id="{{item._id}}"
-				 data-name="{{item.name}}"
-				 data-notice="{{tool.epShowNotice(item._id, oldEpIds, newEpIds)}}"
-				 checked="{{item.name === epName && version === visualVersion}}"
-				 bindchange="confirmPick"
-				>
-					<view slot='label' class='pickerRow'>
-						<view class="pickerImg {{(tool.epShowNotice(item._id, oldEpIds, newEpIds)) ? 'pickerImgHasNew' : ''}}">
-							<image style="flex: none; width: 48px; height: 48px; border-radius: 5px;" src="{{item.img}}" />
-						</view>
-						<view>
-							{{item.name}}
-						</view>
-
-					</view>
-				</mycheckbox>
-			</mycheckboxgroup>
-		</mp-cells>
-
-	</mp-half-screen-dialog>
-
-	<mp-half-screen-dialog extClass='picker' show="{{speedShow}}" closabled="{{false}}">
-		<mp-cells title="选择播放速度" slot="desc">
-			<mycheckboxgroup
-			 catch:touchmove="catchTouchMove"
-			 prop="radio"
-			 multi="{{false}}"
-			 ext-class="checkboxGroup"
-			>
-				<mycheckbox
-				 wx:for="{{speedOptions}}"
-				 wx:key="index"
-				 multi="{{false}}"
-				 value="{{item.value}}"
-				 checked="{{item.value === speed}}"
-				 bindchange="confirmSpeed"
-				>
-					<view slot='label' class='pickerRow'>
-						<view style="margin-right: 15px">
-							{{item.icon}}
-						</view>
-						<view>
-							{{item.label}}
-						</view>
-					</view>
-				</mycheckbox>
-			</mycheckboxgroup>
-		</mp-cells>
-
-	</mp-half-screen-dialog>
-
+  <mp-half-screen-dialog extClass="picker" show="{{speedShow}}" closabled="{{false}}">
+    <mp-cells title="选择播放速度" slot="desc">
+      <mycheckboxgroup
+        catch:touchmove="catchTouchMove"
+        prop="radio"
+        multi="{{false}}"
+        ext-class="checkboxGroup"
+      >
+        <mycheckbox
+          wx:for="{{speedOptions}}"
+          wx:key="index"
+          multi="{{false}}"
+          value="{{item.value}}"
+          checked="{{item.value === speed}}"
+          bindchange="confirmSpeed"
+        >
+          <view slot="label" class="pickerRow">
+            <view style="margin-right: 15px">
+              {{item.icon}}
+            </view>
+            <view>
+              {{item.label}}
+            </view>
+          </view>
+        </mycheckbox>
+      </mycheckboxgroup>
+    </mp-cells>
+  </mp-half-screen-dialog>
 </view>
-

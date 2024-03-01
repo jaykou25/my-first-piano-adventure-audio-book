@@ -1,5 +1,6 @@
 var isPlaying = function (track) {
-  return !!track.index || track.index === 0;
+  // 这里不用 audioStatus 来判断是因为 audioStatus 会有一定的延迟.
+  return track.index !== undefined;
 };
 
 var isActive = function (index, track, epName) {

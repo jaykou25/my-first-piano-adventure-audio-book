@@ -19,7 +19,7 @@ Component({
     epName: "",
     epId: "",
     playingTrack: {
-      index: "",
+      index: undefined,
       title: "",
       epName: "",
     },
@@ -161,6 +161,7 @@ Component({
       });
 
       ba.onPlay(() => {
+        console.log("音频监听信息", "onPlay");
         if (this.shouldPause) {
           ba.pause();
           this.shouldPause = false;
@@ -176,6 +177,7 @@ Component({
       ba.onError(function (e) {});
 
       ba.onEnded(() => {
+        console.log("音频监听信息", "onEnded");
         this.setData({ audioStatus: 0, currentTime: 0, percent: 0 });
 
         const { playMode } = this.data;
@@ -195,12 +197,13 @@ Component({
       });
 
       ba.onStop(() => {
+        console.log("音频监听信息", "onStop");
         // 调速播放的音频需要先stop后再play
         if (this.isSetSpeed) {
           this.startPlay(this.data.playingTrack, this.nowTime);
           this.isSetSpeed = false;
         } else {
-          this.setData({ audioStatus: 0, playingTrack: {} });
+          this.setData({ audioStatus: 0 });
         }
       });
 
@@ -240,6 +243,7 @@ Component({
       if (this.data.audioStatus === 0) {
         this.setData({ playingTrack: {} });
       } else {
+        this.setData({ playingTrack: {} });
         ba.stop();
         // 客户端监听不到stop, 这也只是临时的措施.
         if (app.globalData.isClient) {
@@ -368,9 +372,6 @@ Component({
       }
       ba.stop();
     },
-    isPlaying() {
-      return [1, 2].includes(+this.data.audioStatus);
-    },
     toPickerShow() {
       this.setData({ pickerShow: true });
     },
@@ -468,8 +469,8 @@ Component({
         url: "https://audio-book-api.ttnote.cn/newEps",
         success: (res) => {
           const data = res.data;
-          const ids = data[0] ? data[0].newEpIds.split(",") : [];
-          const hideAudio = data[0] ? data[0].hideAudio : false;
+          const ids = data[1] ? data[1].newEpIds.split(",") : [];
+          const hideAudio = data[1] ? data[1].hideAudio : false;
           this.setData({ newEpIds: ids, hideAudio });
         },
       });
