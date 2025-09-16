@@ -4,7 +4,6 @@
   <scroll-view
     class="body {{tool.isPlaying(playingTrack) ? 'body-playing' : ''}}"
     scroll-y="{{true}}"
-    bindscrolltolower="handleToLower"
   >
     <view class="header">{{epName}}</view>
 
@@ -18,7 +17,7 @@
           data-index="{{index}}"
           data-audio="{{item}}"
         >
-          <image class="audioImg" src="{{targetEp.img}}" />
+          <image class="audioImg" src="{{targetEp.imgSrc}}" />
           <view class="audioIndex">{{tool.pad(index + 1)}}</view>
           <view class="audioTitle">{{item.title}}</view>
           <view class="audioLength">{{item.length}}</view>
@@ -38,16 +37,7 @@
       <view class="info">没有更多</view>
     </block>
 
-    <view class="info" wx:if="{{targetEp.version}}">
-      <view>
-        <text>本页面素材来自菲伯尔钢琴官网</text>
-      </view>
-      <view>
-        https://pianoadventures.cn
-      </view>
-    </view>
-
-    <view class="info" wx:if="{{targetEp._id && targetEp._id != '-1'}}">
+    <view class="info" >
       <view>
         <text>本页面素材来自教材CD</text>
       </view>
@@ -196,19 +186,19 @@
           wx:for="{{versionEps}}"
           wx:key="index"
           multi="{{false}}"
-          data-id="{{item._id}}"
+          data-id="{{item.id}}"
           data-name="{{item.name}}"
-          data-notice="{{tool.epShowNotice(item._id, oldEpIds, newEpIds)}}"
+          data-notice="{{tool.epShowNotice(item.id, oldEpIds, newEpIds)}}"
           checked="{{item.name === epName && version === visualVersion}}"
           bindchange="confirmPick"
         >
           <view slot="label" class="pickerRow">
             <view
-              class="pickerImg {{(tool.epShowNotice(item._id, oldEpIds, newEpIds)) ? 'pickerImgHasNew' : ''}}"
+              class="pickerImg {{(tool.epShowNotice(item.id, oldEpIds, newEpIds)) ? 'pickerImgHasNew' : ''}}"
             >
               <image
                 style="flex: none; width: 48px; height: 48px; border-radius: 5px;"
-                src="{{item.img}}"
+                src="{{item.imgSrc}}"
               />
             </view>
             <view>

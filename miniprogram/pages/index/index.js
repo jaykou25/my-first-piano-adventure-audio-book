@@ -5,11 +5,7 @@ const app = getApp();
 
 const ba = wx.getBackgroundAudioManager();
 
-const epsCn = require("./audios");
-const epsEn = require("./audiosEn");
-const myEps = { cn: epsCn, en: epsEn };
-
-console.log("jay", wx.getStorageSync("epName"));
+let myEps = { cn: [], en: [] };
 
 Component({
   behaviors: [behavior],
@@ -63,7 +59,7 @@ Component({
     },
     targetAudios(data) {
       const { targetEp } = data;
-      return targetEp.audios || 0;
+      return targetEp.tracks || 0;
     },
     isEmpty(data) {
       const { targetAudios } = data;
@@ -75,11 +71,8 @@ Component({
 
       return myEps[visualVersion];
     },
-    hasMore(data) {
-      const { limit, targetEp } = data;
-      const { current = 1, total = 0 } = targetEp;
-
-      return total > current * limit;
+    hasMore() {
+      return false;
     },
   },
   methods: {
@@ -98,8 +91,7 @@ Component({
     },
     onLoad(options) {
       const defaultEpName = wx.getStorageSync("epName") || "我的钢琴第一课·A级";
-      const defaultEpId =
-        wx.getStorageSync("epId") || (defaultEpName == "音阶练习" ? "-1" : ""); //为了兼容之前音阶练习没有epId
+      const defaultEpId = wx.getStorageSync("epId") || "1";
       const defaultPlayMode = wx.getStorageSync("playMode") || 1;
       const defaultVersion = wx.getStorageSync("version") || "cn";
       const oldEpIds = wx.getStorageSync("oldEpIds");
@@ -117,9 +109,16 @@ Component({
         oldEpIds: oldEpIds ? oldEpIds.split(",") : [],
       });
 
-      // 读取云数据库内容
-      this.queryCloudEps(defaultEpId);
       this.queryNewEpIds();
+
+      wx.request({
+        url: "https://my-first-piano-adventure.s3.ap-east-1.amazonaws.com/final.json",
+        success: (res) => {
+          myEps = res.data;
+
+          this.render();
+        },
+      });
 
       // 音频播放进度实时回调
       ba.onTimeUpdate(() => {
@@ -285,7 +284,7 @@ Component({
       this.setData({ loading: true });
 
       const { epName, playingTrack, version } = this.data;
-      const audio = myEps[version].find((ep) => ep.name === epName).audios[
+      const audio = myEps[version].find((ep) => ep.name === epName).tracks[
         index
       ];
 
@@ -303,16 +302,7 @@ Component({
       const { speed, targetEp } = this.data;
       ba.title = audio.title;
 
-      if (audio.epId == -1) {
-        ba.src = audio.src;
-      } else if (audio.epId) {
-        ba.src = "https://www.ttnote.cn" + audio.src;
-      } else {
-        ba.src = audio.src.replace(
-          "https://pianoadventures.cn/",
-          "https://www.ttnote.cn/"
-        );
-      }
+      ba.src = audio.fileSrc;
 
       ba.startTime = startTime;
       ba.coverImgUrl = targetEp.img;
@@ -347,12 +337,6 @@ Component({
       wx.setNavigationBarTitle({
         title: epName,
       });
-
-      if (epId) {
-        if (!this.data.targetAudios) {
-          this.queryCloudTracks(epId);
-        }
-      }
     },
     confirmSpeed(e) {
       const speed = +e.detail.value;
@@ -401,7 +385,7 @@ Component({
     },
     playNext() {
       const { playingTrack, targetEp } = this.data;
-      if (playingTrack.index < targetEp.audios.length - 1) {
+      if (playingTrack.index < targetEp.tracks.length - 1) {
         this.handlePlay(playingTrack.index + 1);
       } else {
         this.setData({ playingTrack: {} });
@@ -420,69 +404,17 @@ Component({
       const version = e.currentTarget.dataset.version;
       this.setData({ visualVersion: version });
     },
-    queryCloudEps(defaultEpId) {
-      wx.request({
-        url: "https://audio-book-api.ttnote.cn/eps",
-        success: (res) => {
-          myEps.cn = epsCn.concat(res.data);
-          this.render();
-
-          if (defaultEpId) {
-            /**
-             * 2022/9/28
-             * bugfix: 小程序在后台时, 通过点击该小程序的分享链接唤起小程序后会再次执行onLoad
-             * 导制重复请求数据
-             * https://developers.weixin.qq.com/community/develop/doc/0002861714003808b99e1412b5b400?fromCreate=0
-             */
-            const ep = myEps.cn.find(($ep) => $ep._id === defaultEpId);
-            if ((ep.audios || []).length < 1) {
-              this.queryCloudTracks(defaultEpId);
-            }
-          }
-        },
-      });
-    },
-    queryCloudTracks(epId, current = 1) {
-      this.setData({ contentLoading: true });
-
-      wx.request({
-        url: `https://audio-book-api.ttnote.cn/tracks/${epId}`,
-        data: { current, limit: this.data.limit },
-        success: (res) => {
-          const ep = myEps.cn.find(($ep) => $ep._id === epId);
-          ep.audios = (ep.audios || []).concat(res.data.rows);
-          ep.total = res.data.count;
-          ep.current = current;
-
-          this.setData({
-            update: this.data.update + 1,
-          });
-        },
-        complete: () => {
-          this.setData({ contentLoading: false });
-        },
-      });
-    },
     // 用于显示通知小红点
     queryNewEpIds() {
       wx.request({
-        url: "https://audio-book-api.ttnote.cn/newEps",
+        url: "https://my-first-piano-adventure.s3.ap-east-1.amazonaws.com/newEps.json",
         success: (res) => {
           const data = res.data;
-          const ids = data[1] ? data[1].newEpIds.split(",") : [];
-          const hideAudio = data[1] ? data[1].hideAudio : false;
+          const ids = data[0] ? data[0].newEpIds.split(",") : [];
+          const hideAudio = data[0] ? data[0].hideAudio : false;
           this.setData({ newEpIds: ids, hideAudio });
         },
       });
-    },
-    // 触底后的操作
-    handleToLower() {
-      const { hasMore, targetEp, contentLoading, epId } = this.data;
-      const { current = 1 } = targetEp;
-
-      if (epId && !contentLoading && hasMore) {
-        this.queryCloudTracks(epId, current + 1);
-      }
     },
     render() {
       this.setData({ update: this.data.update + 1 });
