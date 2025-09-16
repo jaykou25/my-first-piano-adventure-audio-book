@@ -275,22 +275,24 @@ Component({
       this.stopSlider = true;
     },
     handleAudioClick(e) {
+      console.log("handleAudioClick");
       if (this.data.hideAudio) return;
 
       const index = e.currentTarget.dataset.index;
       this.handlePlay(index);
     },
     handlePlay(index) {
-      this.setData({ loading: true });
-
       const { epName, playingTrack, version } = this.data;
-      const audio = myEps[version].find((ep) => ep.name === epName).tracks[
-        index
-      ];
 
       // 正在播放的音频点击忽略
       if (index === playingTrack.index && playingTrack.epName === epName)
         return;
+
+      this.setData({ loading: true });
+
+      const audio = myEps[version].find((ep) => ep.name === epName).tracks[
+        index
+      ];
 
       this.setData({
         playingTrack: { ...audio, index, epName: epName },
@@ -357,6 +359,7 @@ Component({
       ba.stop();
     },
     toPickerShow() {
+      console.log("toPickerShow");
       this.setData({ pickerShow: true });
     },
     toPickerHide() {
@@ -410,8 +413,9 @@ Component({
         url: "https://my-first-piano-adventure.s3.ap-east-1.amazonaws.com/newEps.json",
         success: (res) => {
           const data = res.data;
-          const ids = data[0] ? data[0].newEpIds.split(",") : [];
-          const hideAudio = data[0] ? data[0].hideAudio : false;
+          const item = data[0] || {};
+          const ids = item.newEpIds ? item.newEpIds.split(",") : [];
+          const hideAudio = item.hideAudio || false;
           this.setData({ newEpIds: ids, hideAudio });
         },
       });

@@ -139,32 +139,6 @@
   }
 }
 
-.iconMenu {
-  position: absolute;
-  right: 0;
-  top: -80px;
-  margin-right: 12px;
-  background-color: rgba(247, 247, 247, 1);
-  box-shadow: 2px 2px 5px rgba(210, 210, 210, 0.9);
-  width: 40px;
-  height: 40px;
-}
-
-.iconMenuHasNew::after {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: red;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.iconMenuHover {
-  background-color: rgba(237, 237, 237, 1);
-}
-
 .play-area-content {
   width: 100%;
   display: flex;
@@ -280,6 +254,36 @@
 
 .iconPlay::after {
   content: "播放";
+}
+
+.icon-menu-div {
+  position: absolute;
+  right: 0;
+  top: -90px;
+  padding-right: 12px;
+}
+
+.icon-menu {
+  background-color: rgba(247, 247, 247, 1);
+  box-shadow: 2px 2px 5px rgba(210, 210, 210, 0.9);
+  width: 42px;
+  height: 42px;
+  position: relative;
+}
+
+.iconMenuHasNew::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: red;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.iconMenuHover {
+  background-color: rgba(237, 237, 237, 1);
 }
 
 .picker {
