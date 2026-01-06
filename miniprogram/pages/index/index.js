@@ -43,7 +43,7 @@ Component({
     contentLoading: false, // 从数据库获取音频内容
     limit: 30, // 每页数
     update: 1,
-    hideAudio: false,
+    hideAudio: true,
   },
   isSetSpeed: false,
   nowTime: 0,
@@ -150,6 +150,7 @@ Component({
       });
 
       ba.onCanplay(() => {
+        console.log("onCanplay");
         this.setData({
           loading: false,
         });
@@ -166,7 +167,7 @@ Component({
           this.shouldPause = false;
         }
 
-        this.setData({ audioStatus: 2 });
+        this.setData({ audioStatus: 2, loading: false });
       });
 
       ba.onPause(() => {
@@ -413,7 +414,7 @@ Component({
         url: "https://my-first-piano-adventure.s3.ap-east-1.amazonaws.com/newEps.json",
         success: (res) => {
           const data = res.data;
-          const item = data[0] || {};
+          const item = data[1] || {};
           const ids = item.newEpIds ? item.newEpIds.split(",") : [];
           const hideAudio = item.hideAudio || false;
           this.setData({ newEpIds: ids, hideAudio });
